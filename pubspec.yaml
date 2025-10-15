@@ -29,10 +29,15 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   cupertino_icons: ^1.0.8
+  dio: ^5.9.0
+  equatable: ^2.0.7
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
+  get_it: ^8.2.0
   go_router: ^16.2.4
   mocktail: ^1.0.4
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_lints: ^5.0.0
