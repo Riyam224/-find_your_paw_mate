@@ -52,27 +52,44 @@ class OnboardingScreen extends StatelessWidget {
                 ),
 
                 const Spacer(),
-
-                // 🐾 Button
-                ElevatedButton.icon(
-                  onPressed: () => GoRouter.of(context).go('/home'),
-                  icon: const Icon(Icons.pets, color: Colors.white),
-                  label: const Text(
-                    'Get started',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.backgroundLight,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    minimumSize: const Size(double.infinity, 56),
-                    shape: RoundedRectangleBorder(
+                // 🐾 Custom Get Started Button
+                GestureDetector(
+                  onTap: () {
+                    try {
+                      GoRouter.of(context).go('/home');
+                    } catch (e) {
+                      debugPrint('⚠️ Navigation failed: $e');
+                    }
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
                       borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.15),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    elevation: 4,
-                    shadowColor: Colors.black26,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.pets, color: Colors.white),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Get Started',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
