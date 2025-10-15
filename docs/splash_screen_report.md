@@ -1,4 +1,4 @@
-🧠 Splash Screen Report
+# 🧠 Splash Screen Report
 
 📋 Overview
 
@@ -29,12 +29,9 @@ lib/features/splash/presentation/screens/splash_screen.dart
 🧪 Testing Summary
 
 File:
-
 test/features/splash/presentation/screens/splash_screen_test.dart
 
 ✅ Covered Test Cases
-
-# Test Description Purpose
 
 1 Builds without crashing Ensures SplashScreen widget renders successfully.
 2 Shows logo image Verifies the logo widget is visible and keyed correctly.
@@ -90,7 +87,7 @@ The Splash Screen now:
  • Passes all widget tests.
  • Is ready for integration into app startup flow.
 
-# 🧪 Test Results
+ 🧪 Test Results
 
 All 7 widget tests passed successfully 🎉
 
