@@ -1,6 +1,7 @@
 import 'package:animals_tasks/core/routing/app_routes.dart';
 import 'package:animals_tasks/features/details/presentation/screens/details_screen.dart';
 import 'package:animals_tasks/features/favorite/presentation/screens/favorite_screen.dart';
+import 'package:animals_tasks/features/home/data/models/dog_model.dart';
 import 'package:animals_tasks/features/home/presentation/screens/home_screen.dart';
 import 'package:animals_tasks/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:animals_tasks/features/splash/presentation/screens/splash_screen.dart';
@@ -40,7 +41,9 @@ class RouteGenerator {
         path: AppRoutes.details,
         name: AppRoutes.details,
         builder: (context, state) {
-          return DetailsScreen();
+          // todo
+          final dog = state.extra as DogModel;
+          return DetailsScreen(dog: dog);
         },
       ),
       GoRoute(
