@@ -12,6 +12,23 @@ class DogRepositoryImpl implements DogRepository {
 
   DogRepositoryImpl(this.apiService);
 
+  // Mock helpers for UI filler data
+  static String _randomGender() =>
+      ['Male', 'Female'][DateTime.now().millisecond % 2];
+
+  static String _randomAge() => [
+    '3 Months Old',
+    '1 Year',
+    '2 Years',
+    '5 Months Old',
+  ][DateTime.now().millisecond % 4];
+
+  static String _randomDistance() => [
+    '1.6 km away',
+    '2.7 km away',
+    '3 km away',
+  ][DateTime.now().millisecond % 3];
+
   @override
   Future<Either<Failure, List<DogEntity>>> getDogs({
     int limit = 10,
@@ -99,9 +116,12 @@ class DogRepositoryImpl implements DogRepository {
           id: json['id'] ?? '',
           name: name,
           imageUrl: imageUrl ?? '',
-          breedGroup: breedGroup,
+          gender: _randomGender(),
+          age: _randomAge(),
           weight: weight,
+          distance: _randomDistance(),
           lifeSpan: lifeSpan,
+          breedGroup: breedGroup,
         );
       }).toList();
 

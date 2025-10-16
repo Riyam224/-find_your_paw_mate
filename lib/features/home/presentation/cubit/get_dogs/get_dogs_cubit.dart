@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:animals_tasks/features/home/domain/usecases/get_dogs_usecase.dart';
 import 'package:animals_tasks/features/home/domain/repositories/dog_repo.dart';
-import 'package:animals_tasks/features/home/presentation/cubit/get_dogs_state.dart';
+import 'package:animals_tasks/features/home/presentation/cubit/get_dogs/get_dogs_state.dart';
 
 /// 🐶 Handles fetching dogs for the Home Screen.
 /// Applies Clean Architecture + SOLID + functional error handling (Either)

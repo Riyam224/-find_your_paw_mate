@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:animals_tasks/features/home/domain/usecases/search_dogs_usecase.dart';
-import 'package:animals_tasks/features/home/presentation/cubit/search_dogs_state.dart';
+import 'package:animals_tasks/features/home/presentation/cubit/search_dogs/search_dogs_state.dart';
 
 /// 🔍 Handles searching for dogs by breed name
 /// Applies Clean Architecture + SOLID + functional error handling (Either)

@@ -1,3 +1,4 @@
+import 'package:animals_tasks/features/favorite/presentation/screens/favorite_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:animals_tasks/core/di/di.dart';
@@ -7,14 +8,15 @@ import 'package:animals_tasks/features/home/presentation/widgets/category_chip.d
 import 'package:animals_tasks/features/home/presentation/widgets/search_bar.dart';
 import 'package:animals_tasks/features/home/presentation/widgets/pet_card.dart';
 import 'package:animals_tasks/features/home/presentation/widgets/pet_card_shimmer.dart';
+
 import 'package:animals_tasks/features/home/presentation/widgets/search_results_widget.dart';
 import 'package:animals_tasks/features/home/presentation/widgets/breed_filter_bottom_sheet.dart';
 
-import 'package:animals_tasks/features/home/presentation/cubit/get_dogs_cubit.dart';
-import 'package:animals_tasks/features/home/presentation/cubit/get_dogs_state.dart';
-import 'package:animals_tasks/features/home/presentation/cubit/search_dogs_cubit.dart';
-import 'package:animals_tasks/features/home/presentation/cubit/get_categories_cubit.dart';
-import 'package:animals_tasks/features/home/presentation/cubit/get_categories_state.dart';
+import 'package:animals_tasks/features/home/presentation/cubit/get_dogs/get_dogs_cubit.dart';
+import 'package:animals_tasks/features/home/presentation/cubit/get_dogs/get_dogs_state.dart';
+import 'package:animals_tasks/features/home/presentation/cubit/search_dogs/search_dogs_cubit.dart';
+import 'package:animals_tasks/features/home/presentation/cubit/get_categories/get_categories_cubit.dart';
+import 'package:animals_tasks/features/home/presentation/cubit/get_categories/get_categories_state.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -30,7 +32,9 @@ class HomeScreen extends StatelessWidget {
           create: (_) => getIt<SearchDogsCubit>(), // 🔍 Search cubit
         ),
         BlocProvider(
-          create: (_) => getIt<GetCategoriesCubit>()..fetchCategories(), // 🏷️ Categories cubit
+          create: (_) =>
+              getIt<GetCategoriesCubit>()
+                ..fetchCategories(), // 🏷️ Categories cubit
         ),
       ],
       child: const _HomeView(),
@@ -50,6 +54,14 @@ class _HomeViewState extends State<_HomeView> {
   String selectedCategoryName = 'All';
   bool _isSearching = false;
   String? _selectedBreedGroup;
+  int selectedIndex = 0;
+
+  final List<Widget> screens = const [
+    HomeScreen(),
+    FavoriteScreen(),
+    HomeScreen(),
+    HomeScreen(),
+  ];
 
   void _showFilterBottomSheet() {
     showModalBottomSheet(
@@ -196,7 +208,9 @@ class _HomeViewState extends State<_HomeView> {
                               context.read<GetDogsCubit>().fetchDogs();
                             } else {
                               // Specific category - fetch cats by category
-                              context.read<GetDogsCubit>().fetchCatsByCategory(category.id);
+                              context.read<GetDogsCubit>().fetchCatsByCategory(
+                                category.id,
+                              );
                             }
                           },
                         );
@@ -229,17 +243,22 @@ class _HomeViewState extends State<_HomeView> {
                           // Show shimmer loading effect
                           return ListView.builder(
                             itemCount: 5, // Show 5 shimmer placeholders
-                            itemBuilder: (context, index) => const PetCardShimmer(),
+                            itemBuilder: (context, index) =>
+                                const PetCardShimmer(),
                           );
                         } else if (state is GetDogsLoaded) {
                           var dogs = state.dogs;
 
                           // Apply breed group filter if selected (only for "All" category with dogs)
-                          if (_selectedBreedGroup != null && _selectedBreedGroup!.isNotEmpty && selectedCategoryId == 0) {
+                          if (_selectedBreedGroup != null &&
+                              _selectedBreedGroup!.isNotEmpty &&
+                              selectedCategoryId == 0) {
                             dogs = dogs.where((dog) {
                               // Handle null or empty breed groups
-                              final dogBreedGroup = dog.breedGroup?.toLowerCase() ?? '';
-                              final selectedGroup = _selectedBreedGroup!.toLowerCase();
+                              final dogBreedGroup =
+                                  dog.breedGroup?.toLowerCase() ?? '';
+                              final selectedGroup = _selectedBreedGroup!
+                                  .toLowerCase();
 
                               // Match if breed group contains the selected filter
                               return dogBreedGroup.contains(selectedGroup);
@@ -268,7 +287,8 @@ class _HomeViewState extends State<_HomeView> {
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    _selectedBreedGroup != null || selectedCategoryId != 0
+                                    _selectedBreedGroup != null ||
+                                            selectedCategoryId != 0
                                         ? 'Try a different filter'
                                         : 'Pull to refresh',
                                     style: TextStyle(
@@ -300,39 +320,8 @@ class _HomeViewState extends State<_HomeView> {
           ],
         ),
       ),
-      // todo add bottom navigation __________
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        onTap: (_) {},
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.favorite_border), label: ''),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat_bubble_outline_rounded),
-            label: '',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: ''),
-        ],
-      ),
+
+      // // todo add bottom navigation __________
     );
   }
-}
-
-class Pet {
-  final String name;
-  final String gender;
-  final String age;
-  final String distance;
-  final String image;
-
-  Pet({
-    required this.name,
-    required this.gender,
-    required this.age,
-    required this.distance,
-    required this.image,
-  });
 }

@@ -4,6 +4,7 @@ import 'package:animals_tasks/features/favorite/presentation/screens/favorite_sc
 import 'package:animals_tasks/features/home/presentation/screens/home_screen.dart';
 import 'package:animals_tasks/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:animals_tasks/features/splash/presentation/screens/splash_screen.dart';
+import 'package:animals_tasks/layout/main_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -12,7 +13,7 @@ class RouteGenerator {
     errorBuilder: (context, state) =>
         const Scaffold(body: Center(child: Text('404 Not Found'))),
     // todo initial route
-    initialLocation: AppRoutes.home,
+    initialLocation: AppRoutes.mainLayout,
     routes: [
       GoRoute(
         path: AppRoutes.splash,
@@ -24,7 +25,11 @@ class RouteGenerator {
         name: AppRoutes.onboarding,
         builder: (context, state) => const OnboardingScreen(),
       ),
-
+      GoRoute(
+        path: AppRoutes.mainLayout,
+        name: AppRoutes.mainLayout,
+        builder: (context, state) => const MainLayout(),
+      ),
       GoRoute(
         path: AppRoutes.home,
         name: AppRoutes.home,

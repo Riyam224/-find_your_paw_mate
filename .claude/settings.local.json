@@ -1,11 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "Bash(cd /Users/r/StudioProjects/Flutter Mentorship/week5/animals_tasks && dart analyze:*)",
-      "Bash(curl:*)",
-      "Bash(cd:*)",
-      "Bash(nc:*)",
-      "Bash(cd /Users/r/StudioProjects/Flutter Mentorship/week5/animals_tasks && flutter analyze:*)"
+      "Bash(flutter test:*)"
     ],
     "deny": [],
     "ask": []

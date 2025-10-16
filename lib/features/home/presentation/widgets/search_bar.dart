@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:animals_tasks/features/home/presentation/cubit/search_dogs_cubit.dart';
+import 'package:animals_tasks/features/home/presentation/cubit/search_dogs/search_dogs_cubit.dart';
 
 class SearchBarWidget extends StatefulWidget {
   final Function(String)? onSearch;
@@ -14,6 +14,14 @@ class SearchBarWidget extends StatefulWidget {
 
 class _SearchBarWidgetState extends State<SearchBarWidget> {
   final TextEditingController _controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _controller.addListener(() {
+      setState(() {}); // Rebuild when text changes to update suffix icon
+    });
+  }
 
   @override
   void dispose() {

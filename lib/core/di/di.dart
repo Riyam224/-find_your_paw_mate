@@ -10,14 +10,14 @@ import 'package:animals_tasks/features/home/data/repositories/dog_repo_impl.dart
 import 'package:animals_tasks/features/home/domain/repositories/dog_repo.dart';
 import 'package:animals_tasks/features/home/domain/usecases/get_dogs_usecase.dart';
 import 'package:animals_tasks/features/home/domain/usecases/search_dogs_usecase.dart';
-import 'package:animals_tasks/features/home/presentation/cubit/get_dogs_cubit.dart';
-import 'package:animals_tasks/features/home/presentation/cubit/search_dogs_cubit.dart';
+import 'package:animals_tasks/features/home/presentation/cubit/get_dogs/get_dogs_cubit.dart';
+import 'package:animals_tasks/features/home/presentation/cubit/search_dogs/search_dogs_cubit.dart';
 
 // 🏷️ Features - Categories
 import 'package:animals_tasks/features/home/data/repositories/category_repo_impl.dart';
 import 'package:animals_tasks/features/home/domain/repositories/category_repo.dart';
 import 'package:animals_tasks/features/home/domain/usecases/get_categories_usecase.dart';
-import 'package:animals_tasks/features/home/presentation/cubit/get_categories_cubit.dart';
+import 'package:animals_tasks/features/home/presentation/cubit/get_categories/get_categories_cubit.dart';
 
 final getIt = GetIt.instance;
 

@@ -3,8 +3,6 @@ import 'package:animals_tasks/features/home/domain/entities/dog_entity.dart';
 import 'package:animals_tasks/features/home/domain/repositories/dog_repo.dart';
 import 'package:dartz/dartz.dart';
 
-/// 🔍 Use Case: Search dogs by breed name
-/// Follows single responsibility - only searches dogs
 class SearchDogsUseCase {
   final DogRepository repository;
 
