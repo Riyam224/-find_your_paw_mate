@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'api_constants.dart';
@@ -49,7 +51,7 @@ class DioClient {
       ),
     );
 
-    // 🧾 Debug Logging Interceptor
+    // Debug Logging Interceptor
     dio.interceptors.add(
       LogInterceptor(
         request: true,
