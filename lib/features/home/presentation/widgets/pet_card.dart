@@ -1,13 +1,53 @@
 
 // ignore_for_file: dead_code
+import 'package:animals_tasks/core/di/di.dart';
 import 'package:animals_tasks/features/details/presentation/screens/details_screen.dart';
+import 'package:animals_tasks/features/favorite/presentation/cubit/favorite_cubit.dart';
 import 'package:animals_tasks/features/home/domain/entities/dog_entity.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
-class PetCard extends StatelessWidget {
+class PetCard extends StatefulWidget {
   final DogEntity dog;
   const PetCard({required this.dog, super.key});
+
+  @override
+  State<PetCard> createState() => _PetCardState();
+}
+
+class _PetCardState extends State<PetCard> {
+  bool _isAddingToFavorite = false;
+
+  void _toggleFavorite() async {
+    setState(() => _isAddingToFavorite = true);
+
+    try {
+      await getIt<FavoriteCubit>().addFavorite(imageId: widget.dog.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${widget.dog.name} added to favorites'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.teal,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to add to favorites'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isAddingToFavorite = false);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +58,7 @@ class PetCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => DetailsScreen(dogId: dog.id),
+            builder: (_) => DetailsScreen(dogId: widget.dog.id),
           ),
         );
       },
@@ -34,7 +74,7 @@ class PetCard extends StatelessWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: CachedNetworkImage(
-                  imageUrl: dog.imageUrl,
+                  imageUrl: widget.dog.imageUrl,
                   height: 100,
                   width: 100,
                   fit: BoxFit.cover,
@@ -52,7 +92,7 @@ class PetCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      dog.name,
+                      widget.dog.name,
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
@@ -60,7 +100,7 @@ class PetCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      "${dog.gender ?? ''} • ${dog.age ?? ''}",
+                      "${widget.dog.gender ?? ''} • ${widget.dog.age ?? ''}",
                       style: TextStyle(color: Colors.grey.shade700),
                     ),
                     const SizedBox(height: 4),
@@ -71,14 +111,27 @@ class PetCard extends StatelessWidget {
                           size: 16,
                           color: Colors.red,
                         ),
-                        Text(dog.distance ?? ''),
+                        Text(widget.dog.distance ?? ''),
                       ],
                     ),
                   ],
                 ),
               ),
 
-              const Icon(Icons.favorite_border, color: Colors.teal),
+              // Favorite button
+              IconButton(
+                onPressed: _isAddingToFavorite ? null : _toggleFavorite,
+                icon: _isAddingToFavorite
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.teal),
+                        ),
+                      )
+                    : const Icon(Icons.favorite_border, color: Colors.teal),
+              ),
             ],
           ),
         ),

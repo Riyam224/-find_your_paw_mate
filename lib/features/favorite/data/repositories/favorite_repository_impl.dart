@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:animals_tasks/core/error/failure.dart';
-import 'package:animals_tasks/core/services/api_services.dart';
+import 'package:animals_tasks/core/services/dog_api_service.dart';
 import '../../domain/entities/favorite_entity.dart';
 import '../../domain/repositories/favorite_repository.dart';
 import '../models/favorite_model.dart';
@@ -9,7 +9,7 @@ import '../models/favorite_model.dart';
 /// Implementation of FavoriteRepository
 /// Handles API calls and converts responses to Entities
 class FavoriteRepositoryImpl implements FavoriteRepository {
-  final ApiServices _apiService;
+  final DogApiService _apiService;
 
   FavoriteRepositoryImpl(this._apiService);
 
@@ -19,10 +19,8 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
     int limit = 10,
   }) async {
     try {
-      final response = await _apiService.getFavorites(
-        subId: subId ?? 'user_riyam',
-        limit: limit,
-      );
+      // API service already uses the configured subId from ApiConstants
+      final response = await _apiService.getFavorites();
 
       final favorites = response
           .map<FavoriteEntity>(
@@ -46,11 +44,8 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
     String? subId,
   }) async {
     try {
-      // 🩷 Add favorite using ApiServiceService
-      final response = await _apiService.addToFavorites(
-        imageId,
-        subId: subId ?? 'user_riyam',
-      );
+      // API service already uses the configured subId from ApiConstants
+      final response = await _apiService.addToFavorites(imageId);
 
       // Convert API response to Entity
       final favorite = FavoriteModel.fromJson(response).toEntity();

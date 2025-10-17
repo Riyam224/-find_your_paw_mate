@@ -13,7 +13,11 @@ class DogApiService {
         baseUrl: ApiConstants.catApiBaseUrl,
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
-        headers: {'Accept': 'application/json'},
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'x-api-key': ApiConstants.catApiKey,
+        },
       ),
     );
   }
@@ -81,27 +85,47 @@ class DogApiService {
     }
   }
 
-  // ❤️ 5. Add to favorites
-  Future<void> addToFavorites(String imageId) async {
+  // ❤️ 5. Add to favorites (Cat API)
+  Future<Map<String, dynamic>> addToFavorites(String imageId) async {
     try {
-      await _dio.post(ApiPath.favourites, data: {'image_id': imageId});
+      final response = await _catApiDio.post(
+        ApiPath.favourites,
+        data: {
+          'image_id': imageId,
+          'sub_id': ApiConstants.subId,
+        },
+      );
+      return response.data;
     } on DioException catch (e) {
       throw Exception('🐾 Failed to add favorite: ${e.message}');
+    } catch (e) {
+      throw Exception('🐾 Unexpected error: $e');
     }
   }
 
-  // 💖 6. Get all favorites
+  // 💖 6. Get all favorites (Cat API)
   Future<List<dynamic>> getFavorites() async {
-    final response = await _safeGet(ApiPath.favourites);
-    return response.data;
+    try {
+      final response = await _catApiDio.get(
+        ApiPath.favourites,
+        queryParameters: {'sub_id': ApiConstants.subId},
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception('🐾 Failed to get favorites: ${e.message}');
+    } catch (e) {
+      throw Exception('🐾 Unexpected error: $e');
+    }
   }
 
-  // 💔 7. Delete favorite
+  // 💔 7. Delete favorite (Cat API)
   Future<void> deleteFavorite(int favouriteId) async {
     try {
-      await _dio.delete('${ApiPath.favouriteById}$favouriteId');
+      await _catApiDio.delete('${ApiPath.favouriteById}$favouriteId');
     } on DioException catch (e) {
       throw Exception('🐾 Failed to delete favorite: ${e.message}');
+    } catch (e) {
+      throw Exception('🐾 Unexpected error: $e');
     }
   }
 

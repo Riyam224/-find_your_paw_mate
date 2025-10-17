@@ -25,6 +25,14 @@ import 'package:animals_tasks/features/details/domain/repositories/dog_details_r
 import 'package:animals_tasks/features/details/domain/usecases/get_dog_details_usecase.dart';
 import 'package:animals_tasks/features/details/presentation/cubit/get_dog_details_cubit.dart';
 
+// ❤️ Features - Favorites
+import 'package:animals_tasks/features/favorite/data/repositories/favorite_repository_impl.dart';
+import 'package:animals_tasks/features/favorite/domain/repositories/favorite_repository.dart';
+import 'package:animals_tasks/features/favorite/domain/usecases/get_favorites_usecase.dart';
+import 'package:animals_tasks/features/favorite/domain/usecases/add_favorite_usecase.dart';
+import 'package:animals_tasks/features/favorite/domain/usecases/remove_favorite_usecase.dart';
+import 'package:animals_tasks/features/favorite/presentation/cubit/favorite_cubit.dart';
+
 final getIt = GetIt.instance;
 
 Future<void> setupDependencies() async {
@@ -103,5 +111,33 @@ Future<void> setupDependencies() async {
   // 🔹 Cubit
   getIt.registerFactory<GetDogDetailsCubit>(
     () => GetDogDetailsCubit(getIt<GetDogDetailsUseCase>()),
+  );
+
+  // ❤️ Favorites Feature
+  // 🔹 Repository
+  getIt.registerLazySingleton<FavoriteRepository>(
+    () => FavoriteRepositoryImpl(getIt<DogApiService>()),
+  );
+
+  // 🔹 UseCases
+  getIt.registerLazySingleton<GetFavoritesUseCase>(
+    () => GetFavoritesUseCase(getIt<FavoriteRepository>()),
+  );
+
+  getIt.registerLazySingleton<AddFavoriteUseCase>(
+    () => AddFavoriteUseCase(getIt<FavoriteRepository>()),
+  );
+
+  getIt.registerLazySingleton<RemoveFavoriteUseCase>(
+    () => RemoveFavoriteUseCase(getIt<FavoriteRepository>()),
+  );
+
+  // 🔹 Cubit
+  getIt.registerFactory<FavoriteCubit>(
+    () => FavoriteCubit(
+      getIt<GetFavoritesUseCase>(),
+      getIt<AddFavoriteUseCase>(),
+      getIt<RemoveFavoriteUseCase>(),
+    ),
   );
 }

@@ -3,18 +3,57 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:animals_tasks/core/styling/app_colors.dart';
 import 'package:animals_tasks/features/details/presentation/cubit/get_dog_details_cubit.dart';
 import 'package:animals_tasks/features/details/presentation/cubit/get_dog_details_state.dart';
+import 'package:animals_tasks/features/favorite/presentation/cubit/favorite_cubit.dart';
 import 'package:get_it/get_it.dart';
 
-class DetailsScreen extends StatelessWidget {
+class DetailsScreen extends StatefulWidget {
   final String dogId;
 
   const DetailsScreen({super.key, required this.dogId});
 
   @override
+  State<DetailsScreen> createState() => _DetailsScreenState();
+}
+
+class _DetailsScreenState extends State<DetailsScreen> {
+  bool _isAddingToFavorite = false;
+
+  void _toggleFavorite(String imageId, String name) async {
+    setState(() => _isAddingToFavorite = true);
+
+    try {
+      await GetIt.instance<FavoriteCubit>().addFavorite(imageId: imageId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('$name added to favorites'),
+            duration: const Duration(seconds: 2),
+            backgroundColor: Colors.teal,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to add to favorites'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isAddingToFavorite = false);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          GetIt.instance<GetDogDetailsCubit>()..fetchDogDetails(dogId),
+          GetIt.instance<GetDogDetailsCubit>()..fetchDogDetails(widget.dogId),
       child: Scaffold(
         backgroundColor: AppColors.cardBackground,
         appBar: AppBar(
@@ -27,13 +66,41 @@ class DetailsScreen extends StatelessWidget {
             ),
             onPressed: () => Navigator.pop(context),
           ),
-          actions: const [
-            Padding(
-              padding: EdgeInsets.only(right: 16),
-              child: Icon(
-                Icons.favorite_border_rounded,
-                color: AppColors.primary,
-              ),
+          actions: [
+            BlocBuilder<GetDogDetailsCubit, GetDogDetailsState>(
+              builder: (context, state) {
+                if (state is GetDogDetailsLoaded) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 16),
+                    child: IconButton(
+                      onPressed: _isAddingToFavorite
+                          ? null
+                          : () => _toggleFavorite(state.dog.id, state.dog.name),
+                      icon: _isAddingToFavorite
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(AppColors.primary),
+                              ),
+                            )
+                          : const Icon(
+                              Icons.favorite_border_rounded,
+                              color: AppColors.primary,
+                            ),
+                    ),
+                  );
+                }
+                return const Padding(
+                  padding: EdgeInsets.only(right: 16),
+                  child: Icon(
+                    Icons.favorite_border_rounded,
+                    color: AppColors.primary,
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -69,7 +136,7 @@ class DetailsScreen extends StatelessWidget {
                       onPressed: () {
                         context
                             .read<GetDogDetailsCubit>()
-                            .fetchDogDetails(dogId);
+                            .fetchDogDetails(widget.dogId);
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,

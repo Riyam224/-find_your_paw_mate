@@ -4,6 +4,12 @@ class ApiConstants {
 
   static const String apiKey =
       'live_7cq0hCbE5fULHwQIQ83GJ46H5onXUD2fWwgBcP76OuZNHDi1GWANHVhBJ8fawgIb';
+
+  static const String catApiKey =
+      'live_7cq0hCbE5fULHwQIQ83GJ46H5onXUD2fWwgBcP76OuZNHDi1GWANHVhBJ8fawgIb';
+
+  // User ID for favorites
+  static const String subId = 'user_riyam';
 }
 
 class ApiPath {
