@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:animals_tasks/core/styling/app_colors.dart';
 import 'package:animals_tasks/core/di/di.dart';
+import 'package:animals_tasks/core/common_ui/widgets/bottom_navigation.dart';
 import 'package:animals_tasks/features/favorite/presentation/cubit/favorite_cubit.dart';
 import 'package:animals_tasks/features/favorite/presentation/cubit/favorite_state.dart';
 import 'package:animals_tasks/features/favorite/domain/entities/favorite_entity.dart';
@@ -17,6 +18,16 @@ class FavoriteScreen extends StatelessWidget {
       create: (context) => getIt<FavoriteCubit>()..getFavorites(),
       child: Scaffold(
         backgroundColor: Colors.white,
+        bottomNavigationBar: BottomNavWidget(
+          currentIndex: 1,
+          onTap: (index) {
+            if (index == 0) {
+              // Navigate back to Home screen
+              Navigator.pop(context);
+            }
+            // Handle other navigation items if needed
+          },
+        ),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

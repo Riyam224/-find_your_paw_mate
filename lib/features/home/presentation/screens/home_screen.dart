@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:animals_tasks/core/di/di.dart';
 import 'package:animals_tasks/core/styling/app_colors.dart';
+import 'package:animals_tasks/core/common_ui/widgets/bottom_navigation.dart';
 
 import 'package:animals_tasks/features/home/presentation/widgets/category_chip.dart';
 import 'package:animals_tasks/features/home/presentation/widgets/search_bar.dart';
@@ -320,8 +321,21 @@ class _HomeViewState extends State<_HomeView> {
           ],
         ),
       ),
-
-      // // todo add bottom navigation __________
+      bottomNavigationBar: BottomNavWidget(
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 1) {
+            // Navigate to Favorites screen
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const FavoriteScreen(),
+              ),
+            );
+          }
+          // Handle other navigation items if needed
+        },
+      ),
     );
   }
 }

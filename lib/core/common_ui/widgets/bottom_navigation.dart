@@ -3,15 +3,15 @@
 import 'package:animals_tasks/core/styling/app_colors.dart';
 import 'package:flutter/material.dart';
 
-class BottomNavWidget extends StatefulWidget {
-  const BottomNavWidget({super.key});
+class BottomNavWidget extends StatelessWidget {
+  final int currentIndex;
+  final Function(int) onTap;
 
-  @override
-  State<BottomNavWidget> createState() => _BottomNavWidgetState();
-}
-
-class _BottomNavWidgetState extends State<BottomNavWidget> {
-  int _selectedIndex = 0;
+  const BottomNavWidget({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +33,9 @@ class _BottomNavWidgetState extends State<BottomNavWidget> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildNavItem(Icons.home_rounded, 0, 'Home'),
-              _buildNavItem(Icons.favorite_border, 1, ''),
-              _buildNavItem(Icons.shopping_bag_outlined, 2, ''),
-              _buildNavItem(Icons.account_balance_wallet_outlined, 3, ''),
+              _buildNavItem(Icons.favorite_rounded, 1, 'Favorites'),
+              _buildNavItem(Icons.chat_bubble_rounded, 2, 'Messages'),
+              _buildNavItem(Icons.person_rounded, 3, 'Profile'),
             ],
           ),
         ),
@@ -44,9 +44,9 @@ class _BottomNavWidgetState extends State<BottomNavWidget> {
   }
 
   Widget _buildNavItem(IconData icon, int index, String label) {
-    final isSelected = _selectedIndex == index;
+    final isSelected = currentIndex == index;
     return GestureDetector(
-      onTap: () => setState(() => _selectedIndex = index),
+      onTap: () => onTap(index),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
