@@ -20,7 +20,7 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool navigated = false;
-  Timer? _timer; // ✅ keep a reference to cancel if needed
+  Timer? _timer; 
 
   @override
   void initState() {
@@ -33,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (!mounted || navigated) return;
       navigated = true;
       try {
-        GoRouter.of(context).go('/home');
+        GoRouter.of(context).go('/onboarding');
       } catch (e) {
         debugPrint('⚠️ Navigation failed: $e');
       }
@@ -42,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void dispose() {
-    _timer?.cancel(); // ✅ prevent pending timer
+    _timer?.cancel();
     super.dispose();
   }
 

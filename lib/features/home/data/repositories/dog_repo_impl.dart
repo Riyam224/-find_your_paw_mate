@@ -112,10 +112,12 @@ class DogRepositoryImpl implements DogRepository {
           lifeSpan = breed['life_span'] != null ? '${breed['life_span']} years' : null;
         }
 
+        final catImageId = json['id'] ?? '';
         return DogEntity(
-          id: json['id'] ?? '',
+          id: catImageId,
           name: name,
           imageUrl: imageUrl ?? '',
+          imageId: catImageId, // For cats, the image ID is the same as the ID
           gender: _randomGender(),
           age: _randomAge(),
           weight: weight,

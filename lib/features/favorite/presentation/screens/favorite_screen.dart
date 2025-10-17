@@ -257,10 +257,12 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
     return InkWell(
       onTap: () {
         // Navigate to details screen
+        // Use breedId if available, otherwise use imageId as fallback
+        final dogId = favorite.breedId ?? favorite.imageId;
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => DetailsScreen(dogId: favorite.imageId),
+            builder: (_) => DetailsScreen(dogId: dogId),
           ),
         );
       },
@@ -334,7 +336,7 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Pet #${favorite.imageId.substring(0, favorite.imageId.length > 6 ? 6 : favorite.imageId.length)}',
+                    favorite.petName ?? favorite.breedName ?? 'Pet #${favorite.imageId.substring(0, favorite.imageId.length > 6 ? 6 : favorite.imageId.length)}',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,

@@ -38,7 +38,7 @@ class FavoriteCubit extends Cubit<FavoriteState> {
     final result = await _addFavoriteUseCase(imageId: imageId, subId: subId);
 
     result.fold(
-      (failure) => emit(FavoriteError(failure.message)),
+    (failure) => emit(FavoriteError(failure.message)),
       (favorite) {
         emit(FavoriteAdded(favorite));
         // Refresh the favorites list after adding

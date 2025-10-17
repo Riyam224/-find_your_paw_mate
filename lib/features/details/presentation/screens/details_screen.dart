@@ -73,9 +73,9 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   return Padding(
                     padding: const EdgeInsets.only(right: 16),
                     child: IconButton(
-                      onPressed: _isAddingToFavorite
+                      onPressed: _isAddingToFavorite || state.dog.imageId == null
                           ? null
-                          : () => _toggleFavorite(state.dog.id, state.dog.name),
+                          : () => _toggleFavorite(state.dog.imageId!, state.dog.name),
                       icon: _isAddingToFavorite
                           ? const SizedBox(
                               width: 20,

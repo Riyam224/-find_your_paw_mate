@@ -1,5 +1,4 @@
 import 'package:animals_tasks/core/error/failure.dart';
-import 'package:animals_tasks/core/networking/api_constants.dart';
 import 'package:animals_tasks/core/services/dog_api_service.dart';
 import 'package:animals_tasks/core/utils/mock_data_generator.dart';
 import 'package:animals_tasks/features/details/domain/repositories/dog_details_repo.dart';
@@ -23,15 +22,8 @@ class DogDetailsRepositoryImpl implements DogDetailsRepository {
         // Fetch dog breed details by ID
         final response = await apiService.getBreedById(int.parse(dogId));
 
-        // Get image URL from reference_image_id
-        final referenceId = response['reference_image_id'];
-        final imageUrl = referenceId != null
-            ? '${ApiPath.dogImageCdn}$referenceId.jpg'
-            : null;
-
-        // Create dog model with image URL
-        final dogModel =
-            DogModel.fromJson({...response, 'image_url': imageUrl});
+        // Create dog model (fromJson will extract imageId from reference_image_id and build imageUrl)
+        final dogModel = DogModel.fromJson(response);
 
         return Right(dogModel.toEntity());
       } else {
@@ -65,6 +57,7 @@ class DogDetailsRepositoryImpl implements DogDetailsRepository {
           id: catId,
           name: name,
           imageUrl: imageUrl ?? '',
+          imageId: catId, // For cats, the image ID is the same as the catId
           gender: MockDataGenerator.randomGender(catId),
           age: MockDataGenerator.randomAge(catId),
           weight: weight,

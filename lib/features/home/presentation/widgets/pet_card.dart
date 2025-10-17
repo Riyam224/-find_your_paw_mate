@@ -19,10 +19,24 @@ class _PetCardState extends State<PetCard> {
   bool _isAddingToFavorite = false;
 
   void _toggleFavorite() async {
+    // Check if imageId is available
+    if (widget.dog.imageId == null || widget.dog.imageId!.isEmpty) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Cannot add to favorites: No image available'),
+            duration: Duration(seconds: 2),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+      return;
+    }
+
     setState(() => _isAddingToFavorite = true);
 
     try {
-      await getIt<FavoriteCubit>().addFavorite(imageId: widget.dog.id);
+      await getIt<FavoriteCubit>().addFavorite(imageId: widget.dog.imageId!);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

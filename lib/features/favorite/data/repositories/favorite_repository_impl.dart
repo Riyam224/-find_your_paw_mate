@@ -47,8 +47,20 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
       // API service already uses the configured subId from ApiConstants
       final response = await _apiService.addToFavorites(imageId);
 
-      // Convert API response to Entity
-      final favorite = FavoriteModel.fromJson(response).toEntity();
+      // The addToFavorites API returns: {id: 123, message: "SUCCESS"}
+      // It does NOT return the full favorite object
+      // We need to construct a minimal FavoriteEntity from the response
+      final favoriteId = response['id'] ?? 0;
+
+      // Create a minimal FavoriteEntity with the data we have
+      final favorite = FavoriteEntity(
+        id: favoriteId.toString(),
+        imageId: imageId,
+        imageUrl: _constructImageUrl(imageId),
+        createdAt: DateTime.now(),
+        subId: subId,
+      );
+
       return Right(favorite);
     } on DioException catch (e) {
       final status = e.response?.statusCode ?? 0;
@@ -57,6 +69,13 @@ class FavoriteRepositoryImpl implements FavoriteRepository {
     } catch (e) {
       return Left(UnknownFailure('Unexpected error: $e'));
     }
+  }
+
+  /// Helper method to construct image URL from imageId
+  /// Tries Dog API CDN first as this app primarily uses dog images
+  String _constructImageUrl(String imageId) {
+    // Since this app uses Dog API for images, construct Dog CDN URL
+    return 'https://cdn2.thedogapi.com/images/$imageId.jpg';
   }
 
   @override

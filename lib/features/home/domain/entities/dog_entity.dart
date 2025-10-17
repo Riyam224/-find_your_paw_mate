@@ -4,6 +4,7 @@ class DogEntity extends Equatable {
   final String id;
   final String name;
   final String imageUrl;
+  final String? imageId; // reference_image_id from API - used for favorites
   final String? gender;
   final String? age;
   final String? weight;
@@ -16,6 +17,7 @@ class DogEntity extends Equatable {
     required this.id,
     required this.name,
     required this.imageUrl,
+    this.imageId,
     this.gender,
     this.age,
     this.weight,
@@ -31,6 +33,7 @@ class DogEntity extends Equatable {
     id,
     name,
     imageUrl,
+    imageId,
     gender,
     age,
     weight,

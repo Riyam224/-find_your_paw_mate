@@ -6,6 +6,7 @@ class DogModel {
   final String id;
   final String name;
   final String imageUrl;
+  final String? imageId; // reference_image_id from API - used for favorites
   final String? gender;
   final String? age;
   final String? weight;
@@ -19,6 +20,7 @@ class DogModel {
     required this.id,
     required this.name,
     required this.imageUrl,
+    this.imageId,
     this.gender,
     this.age,
     this.weight,
@@ -40,6 +42,7 @@ class DogModel {
       id: id,
       name: json['name'] ?? 'Unknown Breed',
       imageUrl: imageUrl,
+      imageId: imageId, // ✅ Store the reference_image_id for favorites
       gender: MockDataGenerator.randomGender(id),
       age: MockDataGenerator.randomAge(id),
       weight: json['weight']?['metric'] ?? '',
@@ -56,6 +59,7 @@ class DogModel {
       id: id,
       name: name,
       imageUrl: imageUrl,
+      imageId: imageId,
       gender: gender,
       age: age,
       weight: weight,

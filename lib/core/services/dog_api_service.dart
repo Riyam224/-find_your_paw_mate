@@ -108,7 +108,10 @@ class DogApiService {
     try {
       final response = await _catApiDio.get(
         ApiPath.favourites,
-        queryParameters: {'sub_id': ApiConstants.subId},
+        queryParameters: {
+          'sub_id': ApiConstants.subId,
+          'include_breeds': 1, // Request detailed breed information
+        },
       );
       return response.data;
     } on DioException catch (e) {
