@@ -69,10 +69,16 @@ class DogApiService {
     return response.data;
   }
 
-  // 🖼️ 4. Get single image by ID
+  // 🖼️ 4. Get single image by ID (Cat API)
   Future<Map<String, dynamic>> getImageById(String imageId) async {
-    final response = await _safeGet('${ApiPath.imageById}$imageId');
-    return response.data;
+    try {
+      final response = await _catApiDio.get('${ApiPath.imageById}$imageId');
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception('🐾 API error [${e.response?.statusCode}]: ${e.message}');
+    } catch (e) {
+      throw Exception('🐾 Unexpected error: $e');
+    }
   }
 
   // ❤️ 5. Add to favorites
