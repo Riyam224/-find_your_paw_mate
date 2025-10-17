@@ -8,6 +8,7 @@ abstract class GetDogDetailsState extends Equatable {
   List<Object?> get props => [];
 }
 
+<<<<<<< HEAD
 /// Initial state
 class GetDogDetailsInitial extends GetDogDetailsState {}
 
@@ -15,6 +16,12 @@ class GetDogDetailsInitial extends GetDogDetailsState {}
 class GetDogDetailsLoading extends GetDogDetailsState {}
 
 /// Loaded state with dog details
+=======
+class GetDogDetailsInitial extends GetDogDetailsState {}
+
+class GetDogDetailsLoading extends GetDogDetailsState {}
+
+>>>>>>> develop
 class GetDogDetailsLoaded extends GetDogDetailsState {
   final DogEntity dog;
 
@@ -24,7 +31,10 @@ class GetDogDetailsLoaded extends GetDogDetailsState {
   List<Object?> get props => [dog];
 }
 
+<<<<<<< HEAD
 /// Error state
+=======
+>>>>>>> develop
 class GetDogDetailsError extends GetDogDetailsState {
   final String message;
 
