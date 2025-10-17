@@ -8,14 +8,30 @@ import 'package:animals_tasks/features/favorite/presentation/cubit/favorite_cubi
 import 'package:animals_tasks/features/favorite/presentation/cubit/favorite_state.dart';
 import 'package:animals_tasks/features/favorite/domain/entities/favorite_entity.dart';
 import 'package:animals_tasks/features/details/presentation/screens/details_screen.dart';
+import 'package:animals_tasks/features/home/presentation/cubit/get_categories/get_categories_cubit.dart';
+import 'package:animals_tasks/features/home/presentation/cubit/get_categories/get_categories_state.dart';
 
-class FavoriteScreen extends StatelessWidget {
+class FavoriteScreen extends StatefulWidget {
   const FavoriteScreen({super.key});
 
   @override
+  State<FavoriteScreen> createState() => _FavoriteScreenState();
+}
+
+class _FavoriteScreenState extends State<FavoriteScreen> {
+  int _selectedCategoryId = 0;
+
+  @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => getIt<FavoriteCubit>()..getFavorites(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => getIt<FavoriteCubit>()..getFavorites(),
+        ),
+        BlocProvider(
+          create: (context) => getIt<GetCategoriesCubit>()..fetchCategories(),
+        ),
+      ],
       child: Scaffold(
         backgroundColor: Colors.white,
         bottomNavigationBar: BottomNavWidget(
@@ -42,6 +58,84 @@ class FavoriteScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
+                ),
+                const SizedBox(height: 16),
+
+                // Category Filter Chips
+                BlocBuilder<GetCategoriesCubit, GetCategoriesState>(
+                  builder: (context, state) {
+                    if (state is GetCategoriesLoading) {
+                      return const SizedBox(
+                        height: 40,
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: AppColors.primary,
+                            strokeWidth: 2,
+                          ),
+                        ),
+                      );
+                    } else if (state is GetCategoriesLoaded) {
+                      final categories = state.categories;
+                      return SizedBox(
+                        height: 40,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: categories.length,
+                          separatorBuilder: (_, __) => const SizedBox(width: 10),
+                          itemBuilder: (context, index) {
+                            final category = categories[index];
+                            final isSelected = _selectedCategoryId == category.id;
+                            return GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedCategoryId = category.id;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isSelected
+                                      ? AppColors.primary
+                                      : Colors.grey.shade200,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    category.name,
+                                    style: TextStyle(
+                                      color:
+                                          isSelected ? Colors.white : Colors.black87,
+                                      fontWeight: isSelected
+                                          ? FontWeight.w600
+                                          : FontWeight.w500,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    } else if (state is GetCategoriesError) {
+                      return SizedBox(
+                        height: 40,
+                        child: Center(
+                          child: Text(
+                            state.message,
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+                    return const SizedBox(height: 40);
+                  },
                 ),
                 const SizedBox(height: 20),
 
