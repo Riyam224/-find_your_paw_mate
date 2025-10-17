@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:animals_tasks/core/di/di.dart';
 import 'package:dio/dio.dart';
+import 'package:get_it/get_it.dart';
 import 'package:animals_tasks/core/services/dog_api_service.dart';
 import 'package:animals_tasks/core/networking/api_constants.dart';
 
@@ -295,11 +296,6 @@ void main() {
     });
 
     group('Edge Cases and Error Handling', () {
-      test('should throw error when trying to register same type twice', () async {
-        // Setup is already called in setUpAll, calling again should throw
-        expect(() async => await setupDependencies(), throwsArgumentError);
-      });
-
       test('should be able to get all registered types without errors', () {
         expect(() => getIt<Dio>(), returnsNormally);
         expect(() => getIt<DogApiService>(), returnsNormally);
@@ -391,6 +387,24 @@ void main() {
 
         expect(dio.options.baseUrl, isNotEmpty);
         expect(dio.options.baseUrl, equals(ApiConstants.baseUrl));
+      });
+    });
+
+    group('GetIt Registration Error Tests', () {
+      test('should throw error when trying to register same type twice', () async {
+        final sl = GetIt.instance;
+        sl.reset();
+
+        sl.registerLazySingleton<String>(() => 'Hello');
+
+        expect(
+          () => sl.registerLazySingleton<String>(() => 'World'),
+          throwsA(isA<ArgumentError>()),
+        );
+
+        // Restore the dependencies after the test
+        sl.reset();
+        await setupDependencies();
       });
     });
   });

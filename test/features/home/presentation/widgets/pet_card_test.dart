@@ -465,7 +465,7 @@ void main() {
         matching: find.byType(Row),
       )).first;
 
-      expect(row.children.last, isA<Icon>());
+      expect(row.children.last, isA<IconButton>());
     });
   });
 

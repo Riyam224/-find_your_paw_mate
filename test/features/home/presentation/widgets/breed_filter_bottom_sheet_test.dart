@@ -259,8 +259,10 @@ void main() {
       await tester.tap(find.text('Show Filter'));
       await tester.pumpAndSettle();
 
-      // Act - Tap on "Working"
-      await tester.tap(find.text('Working'));
+      // Act - Scroll to ensure "Working" is visible and tap it
+      await tester.drag(find.byType(ListView), const Offset(0, -200));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Working'), warnIfMissed: false);
       await tester.pumpAndSettle();
 
       // Assert

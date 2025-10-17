@@ -407,7 +407,7 @@ class ApiServices {
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
-            'x-api-key': ApiConstants.CatApiKey, // ✅ fixed key name
+            'x-api-key': ApiConstants.catApiKey, // ✅ fixed key name
           },
         ),
       );
