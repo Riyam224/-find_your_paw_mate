@@ -19,6 +19,12 @@ import 'package:animals_tasks/features/home/domain/repositories/category_repo.da
 import 'package:animals_tasks/features/home/domain/usecases/get_categories_usecase.dart';
 import 'package:animals_tasks/features/home/presentation/cubit/get_categories/get_categories_cubit.dart';
 
+// 🔍 Features - Dog Details
+import 'package:animals_tasks/features/details/data/repositories/dog_details_repo_impl.dart';
+import 'package:animals_tasks/features/details/domain/repositories/dog_details_repo.dart';
+import 'package:animals_tasks/features/details/domain/usecases/get_dog_details_usecase.dart';
+import 'package:animals_tasks/features/details/presentation/cubit/get_dog_details_cubit.dart';
+
 final getIt = GetIt.instance;
 
 Future<void> setupDependencies() async {
@@ -81,5 +87,21 @@ Future<void> setupDependencies() async {
   // 🔹 Cubit
   getIt.registerFactory<GetCategoriesCubit>(
     () => GetCategoriesCubit(getIt<GetCategoriesUseCase>()),
+  );
+
+  // 🔍 Dog Details Feature
+  // 🔹 Repository
+  getIt.registerLazySingleton<DogDetailsRepository>(
+    () => DogDetailsRepositoryImpl(getIt<DogApiService>()),
+  );
+
+  // 🔹 UseCase
+  getIt.registerLazySingleton<GetDogDetailsUseCase>(
+    () => GetDogDetailsUseCase(getIt<DogDetailsRepository>()),
+  );
+
+  // 🔹 Cubit
+  getIt.registerFactory<GetDogDetailsCubit>(
+    () => GetDogDetailsCubit(getIt<GetDogDetailsUseCase>()),
   );
 }
