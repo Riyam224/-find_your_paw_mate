@@ -1,6 +1,7 @@
 import 'package:animals_tasks/core/error/failure.dart';
 import 'package:animals_tasks/core/networking/api_constants.dart';
 import 'package:animals_tasks/core/services/dog_api_service.dart';
+import 'package:animals_tasks/core/utils/mock_data_generator.dart';
 import 'package:animals_tasks/features/details/domain/repositories/dog_details_repo.dart';
 import 'package:animals_tasks/features/home/data/models/dog_model.dart';
 import 'package:animals_tasks/features/home/domain/entities/dog_entity.dart';
@@ -11,23 +12,6 @@ class DogDetailsRepositoryImpl implements DogDetailsRepository {
   final DogApiService apiService;
 
   DogDetailsRepositoryImpl(this.apiService);
-
-  // Mock helpers for UI filler data
-  static String _randomGender() =>
-      ['Male', 'Female'][DateTime.now().millisecond % 2];
-
-  static String _randomAge() => [
-        '3 Months Old',
-        '1 Year',
-        '2 Years',
-        '5 Months Old',
-      ][DateTime.now().millisecond % 4];
-
-  static String _randomDistance() => [
-        '1.6 km away',
-        '2.7 km away',
-        '3 km away',
-      ][DateTime.now().millisecond % 3];
 
   @override
   Future<Either<Failure, DogEntity>> getDogDetails(String dogId) async {
@@ -56,6 +40,7 @@ class DogDetailsRepositoryImpl implements DogDetailsRepository {
 
         final imageUrl = response['url'];
         final catBreeds = response['breeds'] as List?;
+        final catId = response['id'] ?? dogId;
 
         String name = 'Cat';
         String? breedGroup;
@@ -77,13 +62,13 @@ class DogDetailsRepositoryImpl implements DogDetailsRepository {
         }
 
         final catEntity = DogEntity(
-          id: response['id'] ?? '',
+          id: catId,
           name: name,
           imageUrl: imageUrl ?? '',
-          gender: _randomGender(),
-          age: _randomAge(),
+          gender: MockDataGenerator.randomGender(catId),
+          age: MockDataGenerator.randomAge(catId),
           weight: weight,
-          distance: _randomDistance(),
+          distance: MockDataGenerator.randomDistance(catId),
           lifeSpan: lifeSpan,
           breedGroup: breedGroup,
           description: description,

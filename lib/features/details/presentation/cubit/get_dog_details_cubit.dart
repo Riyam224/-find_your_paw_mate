@@ -5,8 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class GetDogDetailsCubit extends Cubit<GetDogDetailsState> {
   final GetDogDetailsUseCase getDogDetailsUseCase;
 
-  GetDogDetailsCubit(this.getDogDetailsUseCase) : super(GetDogDetailsInitial());
+  GetDogDetailsCubit(this.getDogDetailsUseCase)
+      : super(GetDogDetailsInitial());
 
+  /// Fetch dog details by ID
   Future<void> fetchDogDetails(String dogId) async {
     emit(GetDogDetailsLoading());
 

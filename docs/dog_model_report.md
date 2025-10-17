@@ -54,16 +54,19 @@ docs/
 ## 🔧 What We Fixed
 
 ### Issue 1: Missing Data in Pet Cards for Categories
+
 **Problem**: When clicking on a category (cats), pet cards showed only images but no other data (name, gender, age, distance).
 
 **Root Cause**: In `dog_repo_impl.dart`, the `getCatsByCategory` method was creating `DogEntity` objects without the `gender`, `age`, and `distance` fields.
 
 **Solution**:
+
 - Added helper methods (`_randomGender()`, `_randomAge()`, `_randomDistance()`) to `DogRepositoryImpl`
 - Populated missing fields when creating cat entities
 - Ensured consistency with dog data generation
 
 **Files Modified**:
+
 - `lib/features/home/data/repositories/dog_repo_impl.dart` (lines 15-30, 102-105)
 
 ---
@@ -150,7 +153,9 @@ docs/
 ## 🧠 Testing Patterns Used
 
 ### AAA Pattern (Arrange-Act-Assert)
+
 Every test follows this structure:
+
 ```dart
 test('description', () {
   // Arrange: Setup test data
@@ -165,6 +170,7 @@ test('description', () {
 ```
 
 ### Edge Case Coverage
+
 - **Null Safety**: Every nullable field tested with null values
 - **Type Safety**: ID field tested with int, double, bool, and string
 - **Missing Data**: All optional fields tested when absent
@@ -172,7 +178,9 @@ test('description', () {
 - **Empty Data**: Completely empty JSON object tested
 
 ### Mock Data Validation
+
 Random helper methods tested across multiple iterations:
+
 - Gender: 100 iterations
 - Age: 200 iterations
 - Distance: 150 iterations
@@ -184,28 +192,36 @@ This ensures all possible values are generated and validated.
 ## 🎯 Key Testing Insights
 
 ### 1. Robustness
+
 The model handles all edge cases gracefully:
+
 - Null values → sensible defaults
 - Missing fields → empty strings or null
 - Invalid types → throws expected errors
 - Empty JSON → fully functional model with defaults
 
 ### 2. Data Integrity
+
 No data loss occurs during:
+
 - JSON parsing
 - Model construction
 - Entity conversion
 - Type conversions
 
 ### 3. Real-World Ready
+
 Tests include:
+
 - Actual Dog API response structure
 - Mixed valid/invalid data scenarios
 - Various ID type formats
 - Incomplete API responses
 
 ### 4. Mock Data Reliability
+
 Helper methods always generate:
+
 - Non-null values
 - Values from predefined valid sets
 - Consistent UI display data
@@ -215,6 +231,7 @@ Helper methods always generate:
 ## 🔍 Code Coverage
 
 **Model Methods Tested**:
+
 - ✅ `DogModel.fromJson()` - 25 test cases
 - ✅ `DogModel.toEntity()` - 5 test cases
 - ✅ `_randomGender()` - 4 test cases
@@ -233,6 +250,7 @@ flutter test test/features/home/data/models/dog_model_test.dart
 ```
 
 **Results**:
+
 - Total Tests: 35
 - Passed: ✅ 35
 - Failed: ❌ 0
@@ -274,14 +292,17 @@ Potential enhancements for the test suite:
 ## 📝 Related Files
 
 ### Implementation Files
+
 - `lib/features/home/data/models/dog_model.dart` - Model implementation
 - `lib/features/home/domain/entities/dog_entity.dart` - Entity definition
 - `lib/features/home/data/repositories/dog_repo_impl.dart` - Repository with fix
 
 ### Test Files
+
 - `test/features/home/data/models/dog_model_test.dart` - Comprehensive test suite
 
 ### Configuration Files
+
 - `lib/core/networking/api_constants.dart` - API endpoints and CDN URLs
 
 ---
@@ -289,6 +310,7 @@ Potential enhancements for the test suite:
 ## ✅ Conclusion
 
 The DogModel test suite provides comprehensive coverage of all scenarios including:
+
 - Valid data parsing ✅
 - Type conversions ✅
 - Null/missing data handling ✅

@@ -1,4 +1,5 @@
 import '../../../../core/networking/api_constants.dart';
+import '../../../../core/utils/mock_data_generator.dart';
 import '../../domain/entities/dog_entity.dart';
 
 class DogModel {
@@ -33,14 +34,16 @@ class DogModel {
         ? '${ApiPath.dogImageCdn}$imageId.jpg'
         : ''; // ✅ construct URL manually using Dog API CDN
 
+    final id = json['id']?.toString() ?? '';
+
     return DogModel(
-      id: json['id']?.toString() ?? '',
+      id: id,
       name: json['name'] ?? 'Unknown Breed',
       imageUrl: imageUrl,
-      gender: _randomGender(),
-      age: _randomAge(),
+      gender: MockDataGenerator.randomGender(id),
+      age: MockDataGenerator.randomAge(id),
       weight: json['weight']?['metric'] ?? '',
-      distance: _randomDistance(),
+      distance: MockDataGenerator.randomDistance(id),
       lifeSpan: json['life_span'] ?? '',
       breedGroup: json['breed_group'] ?? '',
       description: json['temperament'] ?? '',
@@ -63,21 +66,4 @@ class DogModel {
       isFavorite: isFavorite,
     );
   }
-
-  // Mock helpers for UI filler data
-  static String _randomGender() =>
-      ['Male', 'Female'][DateTime.now().millisecond % 2];
-
-  static String _randomAge() => [
-    '3 Months Old',
-    '1 Year',
-    '2 Years',
-    '5 Months Old',
-  ][DateTime.now().millisecond % 4];
-
-  static String _randomDistance() => [
-    '1.6 km away',
-    '2.7 km away',
-    '3 km away',
-  ][DateTime.now().millisecond % 3];
 }
