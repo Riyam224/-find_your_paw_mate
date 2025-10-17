@@ -237,6 +237,7 @@ class DetailsScreen extends StatelessWidget {
       width: 100,
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: Colors.teal.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
       ),
