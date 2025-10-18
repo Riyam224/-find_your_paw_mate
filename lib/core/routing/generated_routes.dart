@@ -5,6 +5,7 @@ import 'package:animals_tasks/features/favorite/presentation/screens/favorite_sc
 import 'package:animals_tasks/features/home/presentation/screens/home_screen.dart';
 import 'package:animals_tasks/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:animals_tasks/features/splash/presentation/screens/splash_screen.dart';
+
 import 'package:animals_tasks/layout/main_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -19,7 +20,7 @@ class RouteGenerator {
       GoRoute(
         path: AppRoutes.splash,
         name: AppRoutes.splash,
-        builder: (context, state) => const SplashScreen(),
+        builder: (context, state) =>   SplashScreen(),
       ),
       GoRoute(
         path: AppRoutes.onboarding,

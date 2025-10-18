@@ -1,0 +1,25 @@
+    test('should handle 403 forbidden error', () async {
+      // Arrange
+      when(
+        () => mockDio.get(
+          any(),
+          queryParameters: any(named: 'queryParameters'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: ApiPath.breeds),
+          response: Response(
+            requestOptions: RequestOptions(path: ApiPath.breeds),
+            statusCode: 403,
+          ),
+          message: 'Forbidden',
+        ),
+      );
+
+      // Act & Assert
+      // getBreeds() doesn't use _safeGet, so it throws DioException directly
+      expect(
+        () async => await dogApiService.getBreeds(),
+        throwsA(isA<DioException>()),
+      );
+    });

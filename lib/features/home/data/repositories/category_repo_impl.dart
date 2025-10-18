@@ -30,9 +30,10 @@ class CategoryRepositoryImpl implements CategoryRepository {
 
       return Right(allCategories);
     } on DioException catch (e) {
-      return Left(ServerFailure(
-        e.response?.data['message'] ?? 'Failed to load categories',
-      ));
+      final message = (e.response?.data is Map)
+          ? e.response?.data['message'] ?? 'Failed to load categories'
+          : 'Failed to load categories';
+      return Left(ServerFailure(message));
     } catch (e) {
       return Left(UnknownFailure('Unexpected error: $e'));
     }

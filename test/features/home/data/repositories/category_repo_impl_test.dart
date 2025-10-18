@@ -104,4 +104,213 @@ void main() {
       });
     });
   });
+
+  group('🌐 Network Failure Edge Cases', () {
+    test('🌐 handles connection timeout', () async {
+      when(() => mockApiService.getCategories()).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/categories'),
+          message: 'Connection timeout',
+          type: DioExceptionType.connectionTimeout,
+        ),
+      );
+
+      final result = await repository.getCategories();
+
+      expect(result.isLeft(), true);
+      result.fold((failure) {
+        expect(failure, isA<ServerFailure>());
+      }, (_) => fail('Expected failure'));
+    });
+
+    test('🌐 handles receive timeout', () async {
+      when(() => mockApiService.getCategories()).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/categories'),
+          message: 'Receive timeout',
+          type: DioExceptionType.receiveTimeout,
+        ),
+      );
+
+      final result = await repository.getCategories();
+
+      expect(result.isLeft(), true);
+      result.fold((failure) {
+        expect(failure, isA<ServerFailure>());
+      }, (_) => fail('Expected failure'));
+    });
+
+    test('🚫 handles 401 Unauthorized', () async {
+      when(() => mockApiService.getCategories()).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/categories'),
+          response: Response(
+            requestOptions: RequestOptions(path: '/categories'),
+            statusCode: 401,
+            data: {'message': 'Unauthorized access'},
+          ),
+          type: DioExceptionType.badResponse,
+        ),
+      );
+
+      final result = await repository.getCategories();
+
+      expect(result.isLeft(), true);
+      result.fold((failure) {
+        expect(failure, isA<ServerFailure>());
+      }, (_) => fail('Expected failure'));
+    });
+
+    test('🚫 handles 404 Not Found', () async {
+      when(() => mockApiService.getCategories()).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/categories'),
+          response: Response(
+            requestOptions: RequestOptions(path: '/categories'),
+            statusCode: 404,
+            data: {'message': 'Categories endpoint not found'},
+          ),
+          type: DioExceptionType.badResponse,
+        ),
+      );
+
+      final result = await repository.getCategories();
+
+      expect(result.isLeft(), true);
+      result.fold((failure) {
+        expect(failure, isA<ServerFailure>());
+      }, (_) => fail('Expected failure'));
+    });
+
+    test('🚫 handles 429 Too Many Requests', () async {
+      when(() => mockApiService.getCategories()).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/categories'),
+          response: Response(
+            requestOptions: RequestOptions(path: '/categories'),
+            statusCode: 429,
+            data: {'message': 'Rate limit exceeded'},
+          ),
+          type: DioExceptionType.badResponse,
+        ),
+      );
+
+      final result = await repository.getCategories();
+
+      expect(result.isLeft(), true);
+      result.fold((failure) {
+        expect(failure, isA<ServerFailure>());
+      }, (_) => fail('Expected failure'));
+    });
+
+    test('🚫 handles 503 Service Unavailable', () async {
+      when(() => mockApiService.getCategories()).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/categories'),
+          response: Response(
+            requestOptions: RequestOptions(path: '/categories'),
+            statusCode: 503,
+            data: {'message': 'Service temporarily unavailable'},
+          ),
+          type: DioExceptionType.badResponse,
+        ),
+      );
+
+      final result = await repository.getCategories();
+
+      expect(result.isLeft(), true);
+      result.fold((failure) {
+        expect(failure, isA<ServerFailure>());
+      }, (_) => fail('Expected failure'));
+    });
+
+    test('🌐 handles connection error', () async {
+      when(() => mockApiService.getCategories()).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/categories'),
+          message: 'Network connection failed',
+          type: DioExceptionType.connectionError,
+        ),
+      );
+
+      final result = await repository.getCategories();
+
+      expect(result.isLeft(), true);
+      result.fold((failure) {
+        expect(failure, isA<ServerFailure>());
+      }, (_) => fail('Expected failure'));
+    });
+
+    test('🚫 handles request cancellation', () async {
+      when(() => mockApiService.getCategories()).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/categories'),
+          message: 'Request cancelled',
+          type: DioExceptionType.cancel,
+        ),
+      );
+
+      final result = await repository.getCategories();
+
+      expect(result.isLeft(), true);
+      result.fold((failure) {
+        expect(failure, isA<ServerFailure>());
+      }, (_) => fail('Expected failure'));
+    });
+
+    test('❓ handles FormatException', () async {
+      when(() => mockApiService.getCategories())
+          .thenThrow(const FormatException('Invalid response format'));
+
+      final result = await repository.getCategories();
+
+      expect(result.isLeft(), true);
+      result.fold((failure) {
+        expect(failure, isA<UnknownFailure>());
+      }, (_) => fail('Expected failure'));
+    });
+
+    test('❓ handles TypeError', () async {
+      when(() => mockApiService.getCategories()).thenThrow(TypeError());
+
+      final result = await repository.getCategories();
+
+      expect(result.isLeft(), true);
+      result.fold((failure) {
+        expect(failure, isA<UnknownFailure>());
+      }, (_) => fail('Expected failure'));
+    });
+
+    test('❓ handles ArgumentError', () async {
+      when(() => mockApiService.getCategories())
+          .thenThrow(ArgumentError('Invalid argument'));
+
+      final result = await repository.getCategories();
+
+      expect(result.isLeft(), true);
+      result.fold((failure) {
+        expect(failure, isA<UnknownFailure>());
+      }, (_) => fail('Expected failure'));
+    });
+
+    test('🚫 handles response without data field', () async {
+      when(() => mockApiService.getCategories()).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/categories'),
+          response: Response(
+            requestOptions: RequestOptions(path: '/categories'),
+            statusCode: 400,
+          ),
+          type: DioExceptionType.badResponse,
+        ),
+      );
+
+      final result = await repository.getCategories();
+
+      expect(result.isLeft(), true);
+      result.fold((failure) {
+        expect(failure, isA<ServerFailure>());
+      }, (_) => fail('Expected failure'));
+    });
+  });
 }

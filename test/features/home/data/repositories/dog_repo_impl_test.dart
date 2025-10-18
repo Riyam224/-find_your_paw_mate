@@ -172,6 +172,260 @@ void main() {
         (_) => fail('Should fail'),
       );
     });
+
+    test('🌐 returns NetworkFailure on network timeout', () async {
+      when(
+        () => mockApi.searchBreeds(
+          query: any(named: 'query'),
+          limit: any(named: 'limit'),
+          page: any(named: 'page'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/breeds/search'),
+          message: 'Connection timeout',
+          type: DioExceptionType.connectionTimeout,
+        ),
+      );
+      final result = await repo.searchDogs(query: tQuery);
+      result.fold(
+        (f) => expect(f, isA<ServerFailure>()),
+        (_) => fail('Should fail'),
+      );
+    });
+
+    test('🌐 returns NetworkFailure on receive timeout', () async {
+      when(
+        () => mockApi.searchBreeds(
+          query: any(named: 'query'),
+          limit: any(named: 'limit'),
+          page: any(named: 'page'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/breeds/search'),
+          message: 'Receive timeout',
+          type: DioExceptionType.receiveTimeout,
+        ),
+      );
+      final result = await repo.searchDogs(query: tQuery);
+      result.fold(
+        (f) => expect(f, isA<ServerFailure>()),
+        (_) => fail('Should fail'),
+      );
+    });
+
+    test('🚫 handles empty query string', () async {
+      when(
+        () => mockApi.searchBreeds(
+          query: any(named: 'query'),
+          limit: any(named: 'limit'),
+          page: any(named: 'page'),
+        ),
+      ).thenAnswer((_) async => []);
+      final result = await repo.searchDogs(query: '');
+      result.fold(
+        (_) => fail('Should succeed'),
+        (dogs) => expect(dogs, isEmpty),
+      );
+    });
+
+    test('✅ handles special characters in query', () async {
+      when(
+        () => mockApi.searchBreeds(
+          query: any(named: 'query'),
+          limit: any(named: 'limit'),
+          page: any(named: 'page'),
+        ),
+      ).thenAnswer((_) async => []);
+      final result = await repo.searchDogs(query: '!@#\$%^&*()');
+      result.fold(
+        (_) => fail('Should succeed'),
+        (dogs) => expect(dogs, isEmpty),
+      );
+    });
+  });
+
+  group('🌐 Network Failure Edge Cases', () {
+    test('🚫 getDogs handles 401 Unauthorized', () async {
+      when(
+        () => mockApi.getBreeds(
+          limit: any(named: 'limit'),
+          page: any(named: 'page'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/breeds'),
+          response: Response(
+            requestOptions: RequestOptions(path: '/breeds'),
+            statusCode: 401,
+            data: {'message': 'Unauthorized'},
+          ),
+          type: DioExceptionType.badResponse,
+        ),
+      );
+      final result = await repo.getDogs();
+      result.fold(
+        (f) => expect(f, isA<ServerFailure>()),
+        (_) => fail('Should fail'),
+      );
+    });
+
+    test('🚫 getDogs handles 404 Not Found', () async {
+      when(
+        () => mockApi.getBreeds(
+          limit: any(named: 'limit'),
+          page: any(named: 'page'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/breeds'),
+          response: Response(
+            requestOptions: RequestOptions(path: '/breeds'),
+            statusCode: 404,
+            data: {'message': 'Not Found'},
+          ),
+          type: DioExceptionType.badResponse,
+        ),
+      );
+      final result = await repo.getDogs();
+      result.fold(
+        (f) => expect(f, isA<ServerFailure>()),
+        (_) => fail('Should fail'),
+      );
+    });
+
+    test('🚫 getDogs handles 500 Internal Server Error', () async {
+      when(
+        () => mockApi.getBreeds(
+          limit: any(named: 'limit'),
+          page: any(named: 'page'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/breeds'),
+          response: Response(
+            requestOptions: RequestOptions(path: '/breeds'),
+            statusCode: 500,
+            data: {'message': 'Internal Server Error'},
+          ),
+          type: DioExceptionType.badResponse,
+        ),
+      );
+      final result = await repo.getDogs();
+      result.fold(
+        (f) => expect(f, isA<ServerFailure>()),
+        (_) => fail('Should fail'),
+      );
+    });
+
+    test('🌐 getDogs handles connection error', () async {
+      when(
+        () => mockApi.getBreeds(
+          limit: any(named: 'limit'),
+          page: any(named: 'page'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/breeds'),
+          message: 'Connection failed',
+          type: DioExceptionType.connectionError,
+        ),
+      );
+      final result = await repo.getDogs();
+      result.fold(
+        (f) => expect(f, isA<ServerFailure>()),
+        (_) => fail('Should fail'),
+      );
+    });
+
+    test('🚫 getCatsByCategory handles 503 Service Unavailable', () async {
+      when(
+        () => mockApi.getCatImagesByCategory(any(), limit: any(named: 'limit')),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/images/search'),
+          response: Response(
+            requestOptions: RequestOptions(path: '/images/search'),
+            statusCode: 503,
+            data: {'message': 'Service Unavailable'},
+          ),
+          type: DioExceptionType.badResponse,
+        ),
+      );
+      final result = await repo.getCatsByCategory(1);
+      result.fold(
+        (f) => expect(f, isA<ServerFailure>()),
+        (_) => fail('Should fail'),
+      );
+    });
+
+    test('❓ getCatsByCategory handles FormatException', () async {
+      when(
+        () => mockApi.getCatImagesByCategory(any(), limit: any(named: 'limit')),
+      ).thenThrow(const FormatException('Invalid JSON format'));
+      final result = await repo.getCatsByCategory(1);
+      result.fold(
+        (f) => expect(f, isA<UnknownFailure>()),
+        (_) => fail('Should fail'),
+      );
+    });
+
+    test('❓ searchDogs handles TypeError', () async {
+      when(
+        () => mockApi.searchBreeds(
+          query: any(named: 'query'),
+          limit: any(named: 'limit'),
+          page: any(named: 'page'),
+        ),
+      ).thenThrow(TypeError());
+      final result = await repo.searchDogs(query: 'test');
+      result.fold(
+        (f) => expect(f, isA<UnknownFailure>()),
+        (_) => fail('Should fail'),
+      );
+    });
+
+    test('🚫 getDogs handles request cancellation', () async {
+      when(
+        () => mockApi.getBreeds(
+          limit: any(named: 'limit'),
+          page: any(named: 'page'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/breeds'),
+          message: 'Request cancelled',
+          type: DioExceptionType.cancel,
+        ),
+      );
+      final result = await repo.getDogs();
+      result.fold(
+        (f) => expect(f, isA<ServerFailure>()),
+        (_) => fail('Should fail'),
+      );
+    });
+
+    test('🌐 searchDogs handles send timeout', () async {
+      when(
+        () => mockApi.searchBreeds(
+          query: any(named: 'query'),
+          limit: any(named: 'limit'),
+          page: any(named: 'page'),
+        ),
+      ).thenThrow(
+        DioException(
+          requestOptions: RequestOptions(path: '/breeds/search'),
+          message: 'Send timeout',
+          type: DioExceptionType.sendTimeout,
+        ),
+      );
+      final result = await repo.searchDogs(query: 'test');
+      result.fold(
+        (f) => expect(f, isA<ServerFailure>()),
+        (_) => fail('Should fail'),
+      );
+    });
   });
 
   group('🐱 getCatsByCategory', () {

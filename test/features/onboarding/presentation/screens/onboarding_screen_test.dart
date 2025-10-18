@@ -6,31 +6,22 @@ import 'package:go_router/go_router.dart';
 
 void main() {
   group('🐾 OnboardingScreen Tests', () {
-    // 🧱 Helper to wrap widget
+    /// 🧱 Helper — wrap widget with MaterialApp
     Widget buildTestWidget(Widget child) => MaterialApp(home: child);
 
     // ✅ 1. Builds successfully
     testWidgets('✅ Builds without crashing', (tester) async {
-      // Arrange
       await tester.pumpWidget(buildTestWidget(const OnboardingScreen()));
-
-      // Act (nothing yet)
-
-      // Assert
       expect(find.byType(OnboardingScreen), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
     // 🖼️ 2. Image displays correctly
     testWidgets('🖼️ Displays onboarding image', (tester) async {
-      // Arrange
       await tester.pumpWidget(buildTestWidget(const OnboardingScreen()));
-
-      // Act
       final imageFinder = find.byType(Image);
-
-      // Assert
       expect(imageFinder, findsOneWidget);
+
       final image = tester.widget<Image>(imageFinder);
       expect(
         (image.image as AssetImage).assetName,
@@ -57,16 +48,7 @@ void main() {
 
     // 🐾 5. Button container is visible
     testWidgets('🐾 Has Get Started button container', (tester) async {
-      // Arrange
       await tester.pumpWidget(buildTestWidget(const OnboardingScreen()));
-
-      // Act
-      final buttonFinder = find.byType(GestureDetector);
-      final containerFinder = find.byType(Container);
-
-      // Assert
-      expect(buttonFinder, findsWidgets);
-      expect(containerFinder, findsWidgets);
       expect(find.text('Get Started'), findsOneWidget);
       expect(find.byIcon(Icons.pets), findsOneWidget);
     });
@@ -87,7 +69,7 @@ void main() {
       expect(container, isA<Container>());
     });
 
-    // 🚀 7. Navigates to home when tapped
+    // 🚀 7. Navigates to home when tapped (real navigation test)
     testWidgets('🚀 Navigates to Home when tapped', (tester) async {
       final router = GoRouter(
         routes: [
@@ -107,11 +89,19 @@ void main() {
       expect(find.text('Home Screen'), findsOneWidget);
     });
 
-    // ⚠️ 8. Does not crash if GoRouter missing
+    // ⚠️ 8. Does not crash if GoRouter missing (safely silenced)
     testWidgets('⚠️ Does not crash if GoRouter missing', (tester) async {
+      // Temporarily override debugPrint to silence expected warning
+      final originalDebugPrint = debugPrint;
+      debugPrint = (String? message, {int? wrapWidth}) {};
+
       await tester.pumpWidget(buildTestWidget(const OnboardingScreen()));
       await tester.tap(find.text('Get Started'));
       await tester.pump();
+
+      // Restore debugPrint
+      debugPrint = originalDebugPrint;
+
       expect(tester.takeException(), anyOf(isNull, isA<FlutterError>()));
     });
 

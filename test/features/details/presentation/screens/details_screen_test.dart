@@ -1,25 +1,25 @@
-import 'package:animals_tasks/core/di/di.dart';
-import 'package:animals_tasks/core/styling/app_colors.dart';
-import 'package:animals_tasks/features/details/presentation/cubit/get_dog_details_cubit.dart';
-import 'package:animals_tasks/features/details/presentation/cubit/get_dog_details_state.dart';
-import 'package:animals_tasks/features/details/presentation/screens/details_screen.dart';
-import 'package:animals_tasks/features/home/domain/entities/dog_entity.dart';
-import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:bloc_test/bloc_test.dart';
+import 'package:get_it/get_it.dart';
+
+import 'package:animals_tasks/core/di/di.dart';
+import 'package:animals_tasks/core/styling/app_colors.dart';
+import 'package:animals_tasks/features/details/presentation/screens/details_screen.dart';
+import 'package:animals_tasks/features/details/presentation/cubit/get_dog_details_cubit.dart';
+import 'package:animals_tasks/features/details/presentation/cubit/get_dog_details_state.dart';
+import 'package:animals_tasks/features/home/domain/entities/dog_entity.dart';
 
 class MockGetDogDetailsCubit extends MockCubit<GetDogDetailsState>
     implements GetDogDetailsCubit {}
-
 
 void main() {
   late MockGetDogDetailsCubit mockCubit;
   final getIt = GetIt.instance;
 
   setUpAll(() async {
-    getIt.reset();             // clear all old registrations
+    getIt.reset(); // clear all old registrations
     await setupDependencies(); // register everything again
   });
 
@@ -908,9 +908,7 @@ void main() {
   });
 
   group('DetailsScreen - Multiple Dogs', () {
-    testWidgets('should display Labrador correctly', (
-      tester,
-    ) async {
+    testWidgets('should display Labrador correctly', (tester) async {
       // Arrange
       const dog1 = DogEntity(
         id: '1',
@@ -928,9 +926,7 @@ void main() {
       expect(find.text('Labrador'), findsOneWidget);
     });
 
-    testWidgets('should display Poodle correctly', (
-      tester,
-    ) async {
+    testWidgets('should display Poodle correctly', (tester) async {
       // Arrange
       const dog2 = DogEntity(
         id: '2',

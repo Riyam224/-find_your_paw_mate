@@ -1,4 +1,3 @@
-import 'package:animals_tasks/core/di/di.dart';
 import 'package:animals_tasks/features/favorite/domain/entities/favorite_entity.dart';
 import 'package:animals_tasks/features/favorite/presentation/cubit/favorite_cubit.dart';
 import 'package:animals_tasks/features/favorite/presentation/cubit/favorite_state.dart';
@@ -8,7 +7,7 @@ import 'package:animals_tasks/features/home/presentation/cubit/get_categories/ge
 import 'package:animals_tasks/features/home/presentation/cubit/get_categories/get_categories_state.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
@@ -35,15 +34,19 @@ void main() {
 
     // Default state and behavior
     when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-    when(() => mockFavoriteCubit.getFavorites())
-        .thenAnswer((_) async => Future<void>.value());
-    when(() => mockFavoriteCubit.removeFavorite(
-          favoriteId: any(named: 'favoriteId'),
-        )).thenAnswer((_) async => Future<void>.value());
+    when(
+      () => mockFavoriteCubit.getFavorites(),
+    ).thenAnswer((_) async => Future<void>.value());
+    when(
+      () => mockFavoriteCubit.removeFavorite(
+        favoriteId: any(named: 'favoriteId'),
+      ),
+    ).thenAnswer((_) async => Future<void>.value());
 
     when(() => mockGetCategoriesCubit.state).thenReturn(GetCategoriesInitial());
-    when(() => mockGetCategoriesCubit.fetchCategories())
-        .thenAnswer((_) async => Future<void>.value());
+    when(
+      () => mockGetCategoriesCubit.fetchCategories(),
+    ).thenAnswer((_) async => Future<void>.value());
 
     // Register mock cubits in GetIt
     if (GetIt.instance.isRegistered<FavoriteCubit>()) {
@@ -54,8 +57,9 @@ void main() {
     if (GetIt.instance.isRegistered<GetCategoriesCubit>()) {
       GetIt.instance.unregister<GetCategoriesCubit>();
     }
-    GetIt.instance
-        .registerFactory<GetCategoriesCubit>(() => mockGetCategoriesCubit);
+    GetIt.instance.registerFactory<GetCategoriesCubit>(
+      () => mockGetCategoriesCubit,
+    );
   });
 
   tearDown(() {
@@ -100,9 +104,7 @@ void main() {
   ];
 
   Widget createWidgetUnderTest() {
-    return const MaterialApp(
-      home: FavoriteScreen(),
-    );
+    return const MaterialApp(home: FavoriteScreen());
   }
 
   group('FavoriteScreen Widget Tests', () {
@@ -110,8 +112,9 @@ void main() {
       testWidgets('renders title "Your Favorite Pets"', (tester) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesInitial());
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesInitial());
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -123,8 +126,9 @@ void main() {
       testWidgets('renders Scaffold with white background', (tester) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesInitial());
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesInitial());
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -133,12 +137,12 @@ void main() {
         expect(find.byType(Scaffold), findsWidgets);
       });
 
-      testWidgets('renders BottomNavWidget with correct index',
-          (tester) async {
+      testWidgets('renders BottomNavWidget with correct index', (tester) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesInitial());
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesInitial());
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -147,12 +151,14 @@ void main() {
         expect(find.byType(GestureDetector), findsWidgets);
       });
 
-      testWidgets('calls getFavorites on cubit when initialized',
-          (tester) async {
+      testWidgets('calls getFavorites on cubit when initialized', (
+        tester,
+      ) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesInitial());
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesInitial());
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -162,12 +168,14 @@ void main() {
         verify(() => mockFavoriteCubit.getFavorites()).called(1);
       });
 
-      testWidgets('calls fetchCategories on cubit when initialized',
-          (tester) async {
+      testWidgets('calls fetchCategories on cubit when initialized', (
+        tester,
+      ) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesInitial());
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesInitial());
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -179,12 +187,14 @@ void main() {
     });
 
     group('Category Filter Tests', () {
-      testWidgets('shows loading indicator when categories are loading',
-          (tester) async {
+      testWidgets('shows loading indicator when categories are loading', (
+        tester,
+      ) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoading());
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoading());
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -193,12 +203,14 @@ void main() {
         expect(find.byType(CircularProgressIndicator), findsWidgets);
       });
 
-      testWidgets('displays category chips when categories are loaded',
-          (tester) async {
+      testWidgets('displays category chips when categories are loaded', (
+        tester,
+      ) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -210,12 +222,14 @@ void main() {
         expect(find.text('Clothes'), findsOneWidget);
       });
 
-      testWidgets('shows error message when categories fail to load',
-          (tester) async {
+      testWidgets('shows error message when categories fail to load', (
+        tester,
+      ) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesError('Failed to load categories'));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesError('Failed to load categories'));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -227,8 +241,9 @@ void main() {
       testWidgets('first category is selected by default', (tester) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -241,8 +256,9 @@ void main() {
       testWidgets('tapping category chip updates selection', (tester) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -256,12 +272,12 @@ void main() {
         expect(find.text('Hats'), findsOneWidget);
       });
 
-      testWidgets('category chips are horizontally scrollable',
-          (tester) async {
+      testWidgets('category chips are horizontally scrollable', (tester) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -273,8 +289,9 @@ void main() {
       testWidgets('handles empty category list gracefully', (tester) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded([]));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded([]));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -286,12 +303,14 @@ void main() {
     });
 
     group('Favorite List Tests', () {
-      testWidgets('shows loading indicator when favorites are loading',
-          (tester) async {
+      testWidgets('shows loading indicator when favorites are loading', (
+        tester,
+      ) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteLoading());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -302,10 +321,12 @@ void main() {
 
       testWidgets('displays favorites in grid when loaded', (tester) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(testFavorites));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(testFavorites));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -318,8 +339,9 @@ void main() {
       testWidgets('shows empty state when no favorites', (tester) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteLoaded([]));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -328,17 +350,22 @@ void main() {
         // Assert
         expect(find.text('No favorites yet'), findsOneWidget);
         expect(
-            find.text('Start adding pets to your favorites!'), findsOneWidget);
+          find.text('Start adding pets to your favorites!'),
+          findsOneWidget,
+        );
         expect(find.byIcon(Icons.favorite_border), findsOneWidget);
       });
 
-      testWidgets('shows error message when favorites fail to load',
-          (tester) async {
+      testWidgets('shows error message when favorites fail to load', (
+        tester,
+      ) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteError('Failed to load favorites'));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteError('Failed to load favorites'));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -352,10 +379,12 @@ void main() {
 
       testWidgets('retry button calls getFavorites on error', (tester) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteError('Network error'));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteError('Network error'));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
         when(() => mockFavoriteCubit.getFavorites()).thenAnswer((_) async {});
 
         // Act
@@ -369,10 +398,12 @@ void main() {
 
       testWidgets('displays correct number of favorite cards', (tester) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(testFavorites));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(testFavorites));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -382,13 +413,14 @@ void main() {
         expect(find.byType(GridView), findsOneWidget);
       });
 
-      testWidgets('favorite cards display correct information',
-          (tester) async {
+      testWidgets('favorite cards display correct information', (tester) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(testFavorites));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(testFavorites));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -400,10 +432,12 @@ void main() {
 
       testWidgets('GridView has correct grid properties', (tester) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(testFavorites));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(testFavorites));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -411,8 +445,8 @@ void main() {
 
         // Assert
         final gridView = tester.widget<GridView>(find.byType(GridView));
-        final delegate = gridView.gridDelegate
-            as SliverGridDelegateWithFixedCrossAxisCount;
+        final delegate =
+            gridView.gridDelegate as SliverGridDelegateWithFixedCrossAxisCount;
         expect(delegate.crossAxisCount, 2);
         expect(delegate.crossAxisSpacing, 14);
         expect(delegate.mainAxisSpacing, 14);
@@ -422,10 +456,12 @@ void main() {
     group('Navigation Tests', () {
       testWidgets('favorite cards are tappable', (tester) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(testFavorites));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(testFavorites));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -438,13 +474,16 @@ void main() {
     });
 
     group('Remove Favorite Tests', () {
-      testWidgets('shows remove dialog when tapping close button',
-          (tester) async {
+      testWidgets('shows remove dialog when tapping close button', (
+        tester,
+      ) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(testFavorites));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(testFavorites));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -458,18 +497,21 @@ void main() {
         // Assert
         expect(find.text('Remove Favorite'), findsOneWidget);
         expect(
-            find.text('Are you sure you want to remove this pet from favorites?'),
-            findsOneWidget);
+          find.text('Are you sure you want to remove this pet from favorites?'),
+          findsOneWidget,
+        );
         expect(find.text('Cancel'), findsOneWidget);
         expect(find.text('Remove'), findsOneWidget);
       });
 
       testWidgets('cancel button dismisses remove dialog', (tester) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(testFavorites));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(testFavorites));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -487,13 +529,17 @@ void main() {
 
       testWidgets('remove button calls removeFavorite', (tester) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(testFavorites));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
-        when(() => mockFavoriteCubit.removeFavorite(
-              favoriteId: any(named: 'favoriteId'),
-            )).thenAnswer((_) async {});
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(testFavorites));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.removeFavorite(
+            favoriteId: any(named: 'favoriteId'),
+          ),
+        ).thenAnswer((_) async {});
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -506,16 +552,21 @@ void main() {
         await tester.pumpAndSettle();
 
         // Assert
-        verify(() => mockFavoriteCubit.removeFavorite(
-            favoriteId: any(named: 'favoriteId'))).called(1);
+        verify(
+          () => mockFavoriteCubit.removeFavorite(
+            favoriteId: any(named: 'favoriteId'),
+          ),
+        ).called(1);
       });
 
       testWidgets('shows snackbar after removing favorite', (tester) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(testFavorites));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(testFavorites));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -533,8 +584,9 @@ void main() {
     });
 
     group('Date Formatting Tests', () {
-      testWidgets('displays "Just now" for very recent favorites',
-          (tester) async {
+      testWidgets('displays "Just now" for very recent favorites', (
+        tester,
+      ) async {
         // Arrange
         final recentFavorite = [
           FavoriteEntity(
@@ -545,10 +597,12 @@ void main() {
             createdAt: DateTime.now(),
           ),
         ];
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(recentFavorite));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(recentFavorite));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -558,8 +612,9 @@ void main() {
         expect(find.textContaining('Just now'), findsOneWidget);
       });
 
-      testWidgets('displays minutes ago for favorites added minutes ago',
-          (tester) async {
+      testWidgets('displays minutes ago for favorites added minutes ago', (
+        tester,
+      ) async {
         // Arrange
         final minutesAgoFavorite = [
           FavoriteEntity(
@@ -570,10 +625,12 @@ void main() {
             createdAt: DateTime.now().subtract(const Duration(minutes: 30)),
           ),
         ];
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(minutesAgoFavorite));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(minutesAgoFavorite));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -583,8 +640,9 @@ void main() {
         expect(find.textContaining('m ago'), findsOneWidget);
       });
 
-      testWidgets('displays hours ago for favorites added hours ago',
-          (tester) async {
+      testWidgets('displays hours ago for favorites added hours ago', (
+        tester,
+      ) async {
         // Arrange
         final hoursAgoFavorite = [
           FavoriteEntity(
@@ -595,10 +653,12 @@ void main() {
             createdAt: DateTime.now().subtract(const Duration(hours: 2)),
           ),
         ];
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(hoursAgoFavorite));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(hoursAgoFavorite));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -608,8 +668,9 @@ void main() {
         expect(find.textContaining('h ago'), findsOneWidget);
       });
 
-      testWidgets('displays days ago for favorites added days ago',
-          (tester) async {
+      testWidgets('displays days ago for favorites added days ago', (
+        tester,
+      ) async {
         // Arrange
         final daysAgoFavorite = [
           FavoriteEntity(
@@ -620,10 +681,12 @@ void main() {
             createdAt: DateTime.now().subtract(const Duration(days: 5)),
           ),
         ];
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(daysAgoFavorite));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(daysAgoFavorite));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -646,10 +709,12 @@ void main() {
             createdAt: DateTime(2024, 1, 1),
           ),
         ];
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(favoritesWithBadData));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(favoritesWithBadData));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -671,9 +736,12 @@ void main() {
             createdAt: DateTime.now(),
           ),
         );
-        when(() => mockFavoriteCubit.state).thenReturn(FavoriteLoaded(longList));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(longList));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -694,10 +762,12 @@ void main() {
             createdAt: DateTime.now(),
           ),
         ];
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(longIdFavorite));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(longIdFavorite));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -718,10 +788,12 @@ void main() {
             createdAt: DateTime.now(),
           ),
         ];
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(shortIdFavorite));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(shortIdFavorite));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -736,8 +808,9 @@ void main() {
       testWidgets('title has correct font weight and size', (tester) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesInitial());
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesInitial());
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -751,8 +824,9 @@ void main() {
       testWidgets('selected category uses primary color', (tester) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -764,10 +838,12 @@ void main() {
 
       testWidgets('error text is displayed in red', (tester) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteError('Test error'));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteError('Test error'));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -777,13 +853,14 @@ void main() {
         expect(errorText.style?.color, Colors.red);
       });
 
-      testWidgets('favorite cards have proper rounded corners',
-          (tester) async {
+      testWidgets('favorite cards have proper rounded corners', (tester) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(testFavorites));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(testFavorites));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -798,25 +875,29 @@ void main() {
       testWidgets('FavoriteScreen is a StatefulWidget', (tester) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesInitial());
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesInitial());
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
 
         // Assert
         expect(find.byType(FavoriteScreen), findsOneWidget);
-        final favoriteScreen =
-            tester.widget<FavoriteScreen>(find.byType(FavoriteScreen));
+        final favoriteScreen = tester.widget<FavoriteScreen>(
+          find.byType(FavoriteScreen),
+        );
         expect(favoriteScreen, isA<StatefulWidget>());
       });
 
-      testWidgets('provides FavoriteCubit and GetCategoriesCubit',
-          (tester) async {
+      testWidgets('provides FavoriteCubit and GetCategoriesCubit', (
+        tester,
+      ) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesInitial());
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesInitial());
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -829,8 +910,9 @@ void main() {
       testWidgets('has SafeArea wrapping content', (tester) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteInitial());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesInitial());
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesInitial());
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -844,8 +926,9 @@ void main() {
       testWidgets('shows loading state correctly', (tester) async {
         // Arrange
         when(() => mockFavoriteCubit.state).thenReturn(FavoriteLoading());
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -856,10 +939,12 @@ void main() {
 
       testWidgets('shows loaded state correctly', (tester) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteLoaded(testFavorites));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteLoaded(testFavorites));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());
@@ -871,10 +956,12 @@ void main() {
 
       testWidgets('shows error state correctly', (tester) async {
         // Arrange
-        when(() => mockFavoriteCubit.state)
-            .thenReturn(FavoriteError('Network error'));
-        when(() => mockGetCategoriesCubit.state)
-            .thenReturn(GetCategoriesLoaded(testCategories));
+        when(
+          () => mockFavoriteCubit.state,
+        ).thenReturn(FavoriteError('Network error'));
+        when(
+          () => mockGetCategoriesCubit.state,
+        ).thenReturn(GetCategoriesLoaded(testCategories));
 
         // Act
         await tester.pumpWidget(createWidgetUnderTest());

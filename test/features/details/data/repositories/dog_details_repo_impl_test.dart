@@ -133,5 +133,265 @@ void main() {
         );
       });
     });
+
+    group('🌐 Network Failure Edge Cases', () {
+      test('🌐 handles connection timeout for dog breed', () async {
+        const dogId = '1';
+        when(() => mockApiService.getBreedById(1)).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/breeds/1'),
+            message: 'Connection timeout',
+            type: DioExceptionType.connectionTimeout,
+          ),
+        );
+
+        final result = await repository.getDogDetails(dogId);
+
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) {
+            expect(failure, isA<ServerFailure>());
+            expect(failure.message, contains('API Error'));
+          },
+          (dog) => fail('Should return failure'),
+        );
+      });
+
+      test('🌐 handles receive timeout for cat image', () async {
+        const catId = 'cat_abc123';
+        when(() => mockApiService.getImageById(catId)).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/images/$catId'),
+            message: 'Receive timeout',
+            type: DioExceptionType.receiveTimeout,
+          ),
+        );
+
+        final result = await repository.getDogDetails(catId);
+
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) => expect(failure, isA<ServerFailure>()),
+          (dog) => fail('Should return failure'),
+        );
+      });
+
+      test('🚫 handles 401 Unauthorized', () async {
+        const dogId = '1';
+        when(() => mockApiService.getBreedById(1)).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/breeds/1'),
+            response: Response(
+              requestOptions: RequestOptions(path: '/breeds/1'),
+              statusCode: 401,
+              data: {'message': 'Unauthorized'},
+            ),
+            type: DioExceptionType.badResponse,
+          ),
+        );
+
+        final result = await repository.getDogDetails(dogId);
+
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) => expect(failure, isA<ServerFailure>()),
+          (dog) => fail('Should return failure'),
+        );
+      });
+
+      test('🚫 handles 404 Not Found', () async {
+        const dogId = '999';
+        when(() => mockApiService.getBreedById(999)).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/breeds/999'),
+            response: Response(
+              requestOptions: RequestOptions(path: '/breeds/999'),
+              statusCode: 404,
+              data: {'message': 'Breed not found'},
+            ),
+            type: DioExceptionType.badResponse,
+          ),
+        );
+
+        final result = await repository.getDogDetails(dogId);
+
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) => expect(failure, isA<ServerFailure>()),
+          (dog) => fail('Should return failure'),
+        );
+      });
+
+      test('🚫 handles 500 Internal Server Error', () async {
+        const dogId = '1';
+        when(() => mockApiService.getBreedById(1)).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/breeds/1'),
+            response: Response(
+              requestOptions: RequestOptions(path: '/breeds/1'),
+              statusCode: 500,
+              data: {'message': 'Internal Server Error'},
+            ),
+            type: DioExceptionType.badResponse,
+          ),
+        );
+
+        final result = await repository.getDogDetails(dogId);
+
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) => expect(failure, isA<ServerFailure>()),
+          (dog) => fail('Should return failure'),
+        );
+      });
+
+      test('🌐 handles connection error', () async {
+        const dogId = '1';
+        when(() => mockApiService.getBreedById(1)).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/breeds/1'),
+            message: 'No internet connection',
+            type: DioExceptionType.connectionError,
+          ),
+        );
+
+        final result = await repository.getDogDetails(dogId);
+
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) => expect(failure, isA<ServerFailure>()),
+          (dog) => fail('Should return failure'),
+        );
+      });
+
+      test('🚫 handles request cancellation', () async {
+        const catId = 'cat_xyz';
+        when(() => mockApiService.getImageById(catId)).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/images/$catId'),
+            message: 'Request cancelled',
+            type: DioExceptionType.cancel,
+          ),
+        );
+
+        final result = await repository.getDogDetails(catId);
+
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) => expect(failure, isA<ServerFailure>()),
+          (dog) => fail('Should return failure'),
+        );
+      });
+
+      test('❓ handles FormatException', () async {
+        const dogId = '1';
+        when(() => mockApiService.getBreedById(1))
+            .thenThrow(const FormatException('Invalid response'));
+
+        final result = await repository.getDogDetails(dogId);
+
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) => expect(failure, isA<UnknownFailure>()),
+          (dog) => fail('Should return failure'),
+        );
+      });
+
+      test('❓ handles TypeError', () async {
+        const catId = 'cat_123';
+        when(() => mockApiService.getImageById(catId)).thenThrow(TypeError());
+
+        final result = await repository.getDogDetails(catId);
+
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) => expect(failure, isA<UnknownFailure>()),
+          (dog) => fail('Should return failure'),
+        );
+      });
+
+      test('🚫 handles 503 Service Unavailable', () async {
+        const dogId = '1';
+        when(() => mockApiService.getBreedById(1)).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/breeds/1'),
+            response: Response(
+              requestOptions: RequestOptions(path: '/breeds/1'),
+              statusCode: 503,
+              data: {'message': 'Service temporarily unavailable'},
+            ),
+            type: DioExceptionType.badResponse,
+          ),
+        );
+
+        final result = await repository.getDogDetails(dogId);
+
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) => expect(failure, isA<ServerFailure>()),
+          (dog) => fail('Should return failure'),
+        );
+      });
+
+      test('🌐 handles send timeout', () async {
+        const dogId = '1';
+        when(() => mockApiService.getBreedById(1)).thenThrow(
+          DioException(
+            requestOptions: RequestOptions(path: '/breeds/1'),
+            message: 'Send timeout',
+            type: DioExceptionType.sendTimeout,
+          ),
+        );
+
+        final result = await repository.getDogDetails(dogId);
+
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) => expect(failure, isA<ServerFailure>()),
+          (dog) => fail('Should return failure'),
+        );
+      });
+
+      test('❓ handles invalid dog ID format', () async {
+        const invalidId = 'invalid!@#';
+        when(() => mockApiService.getImageById(invalidId))
+            .thenThrow(ArgumentError('Invalid ID format'));
+
+        final result = await repository.getDogDetails(invalidId);
+
+        expect(result.isLeft(), true);
+        result.fold(
+          (failure) => expect(failure, isA<UnknownFailure>()),
+          (dog) => fail('Should return failure'),
+        );
+      });
+
+      test('✅ handles empty dog ID by treating as cat', () async {
+        const emptyId = '';
+        final mockResponse = {
+          'id': '',
+          'url': 'https://example.com/cat.jpg',
+          'breeds': [
+            {
+              'name': 'Unknown',
+              'temperament': 'Friendly',
+              'life_span': '10-15',
+              'weight': {'metric': '3-5'},
+            }
+          ],
+        };
+
+        when(() => mockApiService.getImageById(emptyId))
+            .thenAnswer((_) async => mockResponse);
+
+        final result = await repository.getDogDetails(emptyId);
+
+        expect(result.isRight(), true);
+        result.fold(
+          (failure) => fail('Should return success'),
+          (dog) => expect(dog.name, 'Unknown'),
+        );
+      });
+    });
   });
 }

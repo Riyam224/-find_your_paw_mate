@@ -121,5 +121,142 @@ void main() {
         ),
       ],
     );
+
+    blocTest<GetDogsCubit, GetDogsState>(
+      'handles NetworkFailure when fetching dogs',
+      build: () {
+        when(
+          () => mockUseCase(
+            limit: any(named: 'limit'),
+            page: any(named: 'page'),
+          ),
+        ).thenAnswer((_) async => Left(NetworkFailure('Connection timeout')));
+        return cubit;
+      },
+      act: (cubit) => cubit.fetchDogs(),
+      expect: () => [
+        isA<GetDogsLoading>(),
+        isA<GetDogsError>().having(
+          (s) => (s as GetDogsError).message,
+          'error',
+          contains('Connection timeout'),
+        ),
+      ],
+    );
+
+    blocTest<GetDogsCubit, GetDogsState>(
+      'handles UnknownFailure when fetching dogs',
+      build: () {
+        when(
+          () => mockUseCase(
+            limit: any(named: 'limit'),
+            page: any(named: 'page'),
+          ),
+        ).thenAnswer((_) async => Left(UnknownFailure('Unexpected error occurred')));
+        return cubit;
+      },
+      act: (cubit) => cubit.fetchDogs(),
+      expect: () => [
+        isA<GetDogsLoading>(),
+        isA<GetDogsError>().having(
+          (s) => (s as GetDogsError).message,
+          'error',
+          contains('Unexpected error'),
+        ),
+      ],
+    );
+
+    blocTest<GetDogsCubit, GetDogsState>(
+      'emits [Loading, Loaded] with empty list when no dogs',
+      build: () {
+        when(
+          () => mockUseCase(
+            limit: any(named: 'limit'),
+            page: any(named: 'page'),
+          ),
+        ).thenAnswer((_) async => const Right([]));
+        return cubit;
+      },
+      act: (cubit) => cubit.fetchDogs(),
+      expect: () => [
+        isA<GetDogsLoading>(),
+        isA<GetDogsLoaded>().having(
+          (s) => (s as GetDogsLoaded).dogs,
+          'dogs',
+          isEmpty,
+        ),
+      ],
+    );
+
+    blocTest<GetDogsCubit, GetDogsState>(
+      'handles NetworkFailure when fetching cats by category',
+      build: () {
+        when(
+          () => mockRepo.getCatsByCategory(any(), limit: any(named: 'limit')),
+        ).thenAnswer((_) async => Left(NetworkFailure('Network error')));
+        return cubit;
+      },
+      act: (cubit) => cubit.fetchCatsByCategory(3),
+      expect: () => [
+        isA<GetDogsLoading>(),
+        isA<GetDogsError>().having(
+          (s) => (s as GetDogsError).message,
+          'error',
+          contains('Network error'),
+        ),
+      ],
+    );
+
+    blocTest<GetDogsCubit, GetDogsState>(
+      'emits [Loading, Loaded] with empty list when category has no cats',
+      build: () {
+        when(
+          () => mockRepo.getCatsByCategory(any(), limit: any(named: 'limit')),
+        ).thenAnswer((_) async => const Right([]));
+        return cubit;
+      },
+      act: (cubit) => cubit.fetchCatsByCategory(5),
+      expect: () => [
+        isA<GetDogsLoading>(),
+        isA<GetDogsLoaded>().having(
+          (s) => (s as GetDogsLoaded).dogs,
+          'dogs',
+          isEmpty,
+        ),
+      ],
+    );
+
+    blocTest<GetDogsCubit, GetDogsState>(
+      'handles invalid category ID (negative)',
+      build: () {
+        when(
+          () => mockRepo.getCatsByCategory(any(), limit: any(named: 'limit')),
+        ).thenAnswer((_) async => Left(ServerFailure('Invalid category')));
+        return cubit;
+      },
+      act: (cubit) => cubit.fetchCatsByCategory(-1),
+      expect: () => [
+        isA<GetDogsLoading>(),
+        isA<GetDogsError>(),
+      ],
+      verify: (_) {
+        verify(() => mockRepo.getCatsByCategory(-1, limit: 10)).called(1);
+      },
+    );
+
+    blocTest<GetDogsCubit, GetDogsState>(
+      'handles very large category ID',
+      build: () {
+        when(
+          () => mockRepo.getCatsByCategory(any(), limit: any(named: 'limit')),
+        ).thenAnswer((_) async => const Right([]));
+        return cubit;
+      },
+      act: (cubit) => cubit.fetchCatsByCategory(999999),
+      expect: () => [
+        isA<GetDogsLoading>(),
+        isA<GetDogsLoaded>(),
+      ],
+    );
   });
 }

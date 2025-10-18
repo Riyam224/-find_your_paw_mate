@@ -115,5 +115,167 @@ void main() {
       act: (cubit) => cubit.clearSearch(),
       expect: () => [isA<SearchDogsInitial>()],
     );
+
+    blocTest<SearchDogsCubit, SearchDogsState>(
+      'handles NetworkFailure',
+      build: () {
+        when(
+          () => mockUseCase(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            page: any(named: 'page'),
+          ),
+        ).thenAnswer((_) async => Left(NetworkFailure('No internet connection')));
+        return cubit;
+      },
+      act: (cubit) => cubit.searchDogs('test'),
+      expect: () => [
+        isA<SearchDogsLoading>(),
+        isA<SearchDogsError>().having(
+          (s) => (s as SearchDogsError).message,
+          'error',
+          contains('No internet'),
+        ),
+      ],
+    );
+
+    blocTest<SearchDogsCubit, SearchDogsState>(
+      'handles UnknownFailure',
+      build: () {
+        when(
+          () => mockUseCase(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            page: any(named: 'page'),
+          ),
+        ).thenAnswer((_) async => Left(UnknownFailure('Unexpected error')));
+        return cubit;
+      },
+      act: (cubit) => cubit.searchDogs('test'),
+      expect: () => [
+        isA<SearchDogsLoading>(),
+        isA<SearchDogsError>().having(
+          (s) => (s as SearchDogsError).message,
+          'error',
+          contains('Unexpected error'),
+        ),
+      ],
+    );
+
+    blocTest<SearchDogsCubit, SearchDogsState>(
+      'handles special characters in query',
+      build: () {
+        when(
+          () => mockUseCase(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            page: any(named: 'page'),
+          ),
+        ).thenAnswer((_) async => const Right([]));
+        return cubit;
+      },
+      act: (cubit) => cubit.searchDogs('!@#\$%'),
+      expect: () => [
+        isA<SearchDogsLoading>(),
+        isA<SearchDogsEmpty>(),
+      ],
+      verify: (_) {
+        verify(
+          () => mockUseCase(query: '!@#\$%', limit: 20, page: 0),
+        ).called(1);
+      },
+    );
+
+    blocTest<SearchDogsCubit, SearchDogsState>(
+      'handles very long query string',
+      build: () {
+        when(
+          () => mockUseCase(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            page: any(named: 'page'),
+          ),
+        ).thenAnswer((_) async => Right(tDogs));
+        return cubit;
+      },
+      act: (cubit) => cubit.searchDogs('a' * 100),
+      expect: () => [
+        isA<SearchDogsLoading>(),
+        isA<SearchDogsLoaded>(),
+      ],
+    );
+
+    blocTest<SearchDogsCubit, SearchDogsState>(
+      'handles query with only spaces',
+      build: () => cubit,
+      act: (cubit) => cubit.searchDogs('     '),
+      expect: () => [isA<SearchDogsInitial>()],
+      verify: (_) => verifyNever(() => mockUseCase(query: any(named: 'query'))),
+    );
+
+    blocTest<SearchDogsCubit, SearchDogsState>(
+      'handles empty string query',
+      build: () => cubit,
+      act: (cubit) => cubit.searchDogs(''),
+      expect: () => [isA<SearchDogsInitial>()],
+      verify: (_) => verifyNever(() => mockUseCase(query: any(named: 'query'))),
+    );
+
+    blocTest<SearchDogsCubit, SearchDogsState>(
+      'handles query with leading/trailing spaces',
+      build: () {
+        when(
+          () => mockUseCase(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            page: any(named: 'page'),
+          ),
+        ).thenAnswer((_) async => Right(tDogs));
+        return cubit;
+      },
+      act: (cubit) => cubit.searchDogs('  bulldog  '),
+      expect: () => [
+        isA<SearchDogsLoading>(),
+        isA<SearchDogsLoaded>(),
+      ],
+    );
+
+    blocTest<SearchDogsCubit, SearchDogsState>(
+      'handles single character query',
+      build: () {
+        when(
+          () => mockUseCase(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            page: any(named: 'page'),
+          ),
+        ).thenAnswer((_) async => const Right([]));
+        return cubit;
+      },
+      act: (cubit) => cubit.searchDogs('a'),
+      expect: () => [
+        isA<SearchDogsLoading>(),
+        isA<SearchDogsEmpty>(),
+      ],
+    );
+
+    blocTest<SearchDogsCubit, SearchDogsState>(
+      'handles numeric query',
+      build: () {
+        when(
+          () => mockUseCase(
+            query: any(named: 'query'),
+            limit: any(named: 'limit'),
+            page: any(named: 'page'),
+          ),
+        ).thenAnswer((_) async => const Right([]));
+        return cubit;
+      },
+      act: (cubit) => cubit.searchDogs('12345'),
+      expect: () => [
+        isA<SearchDogsLoading>(),
+        isA<SearchDogsEmpty>(),
+      ],
+    );
   });
 }
