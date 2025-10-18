@@ -1,0 +1,7 @@
+name: Flutter Test & Codecov Upload
+
+on:
+  push:
+    branches:
+      - main
+ 

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter test:*)",
+<<<<<<< HEAD
+      "Bash(cd:*)"
+=======
+      "Read(//Users/r/StudioProjects/**)"
+>>>>>>> develop
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
